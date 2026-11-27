@@ -1,11 +1,19 @@
 """Luồng chính — workflow cố định A+ (spec.md §4).
 
     ① nhận diện lab (regex, trong file này)  →  ② search_guides  →  ③ call_model (SYSTEM + căn cứ + câu hỏi)
-    →  ④ verify_citations
+    →  ④ code kiểm (verify_citations + find_problem)
        ├─ ổn → trả lời
-       └─ not_found, trích dẫn bịa, answer không trích dẫn, refuse có code, hoặc (model thật) thiếu dòng QUYẾT ĐỊNH
+       └─ not_found hoặc kiểm không qua
           → ⑤ tra lại ĐÚNG 1 LẦN (câu hỏi + từ khoá về nộp bài / checkpoint) + gọi model lần 2 → kiểm lại
-             └─ vẫn hỏng (trừ not_found thật) → code hạ về câu an toàn (not_found, hoặc refuse) + note("chặn: …")
+             └─ vẫn hỏng → code hạ về câu an toàn (not_found, hoặc refuse) + note("chặn: …")
+
+② bổ sung: hỏi "sản phẩm cuối", "deliverable"… → tra thêm mục danh sách bài nộp; hỏi "CP N" → tra riêng CP N.
+Không có căn cứ (không mục nào khớp, hoặc không mục nào ghi CP N): không bao giờ answer, không tra lại;
+giữ refuse / ask_back của model nếu qua kiểm, còn lại code hỏi lại (có CP N) hoặc trả not_found.
+
+Kiểm bằng code: dòng QUYẾT ĐỊNH · trích dẫn có thật VÀ nằm trong căn cứ đã đưa · answer phải có trích dẫn ·
+khối code, tên file, giờ, ngày, % phải có trong căn cứ · không chép SYSTEM. not_found luôn dùng câu cố định.
+KHÔNG kiểm được ý bịa chỉ bằng lời (vd "nộp qua email") đi kèm trích dẫn thật — phải đo bằng câu thử.
 
 Code quyết định có tra lại hay không; model chỉ viết câu trả lời. Tối đa 2 lần gọi model mỗi câu hỏi.
 Hợp đồng: answer(text) -> {"output": str}. Không bắt exception của call_model (khung ghi lỗi).
@@ -21,8 +29,10 @@ from tracing import note
 DECISIONS = ("answer", "ask_back", "not_found", "refuse")
 LABS_KNOWN = (4, 7, 8, 10, 11)   # 5 lab có dữ liệu trong data/labs/
 K = 5
+MAX_QUESTION_BACK = 300          # số ký tự tối đa của một câu hỏi lại
 # Lần tra lại: thêm từ khoá về nộp bài / checkpoint / chấm điểm vào câu hỏi (chung cho mọi lab)
 RETRY_TERMS = "nộp submission checkpoint rubric deadline checklist"
+FINAL_QUERY = "danh sách bài nộp submission checklist"
 
 SYSTEM = """Bạn là trợ lý tra cứu hướng dẫn lab cho học viên L3 khoá K5 (AI20K). Bạn CHỈ trả lời câu hỏi về việc phải nộp gì, hạn nộp, cách đặt tên, checkpoint cần gì, quy định của lab — dựa trên các mục tài liệu trong phần CĂN CỨ.
 
@@ -42,12 +52,21 @@ Luật bắt buộc:
 7. Trả lời bằng tiếng Việt."""
 
 LAB_RE = re.compile(r"\b(day|lab|ngay)\s*0*(\d{1,2})\b")
-CODE_RE = re.compile(r"```|^\s*(def|class)\s+\w+", re.MULTILINE)
+# Các cách dưới đây so trên câu đã bỏ dấu; mốc viết như tools.py gộp: "CP2", "CP 02", "checkpoint 2".
+CHECKPOINT_RE = re.compile(r"\b(?:check[ \-]?point|cp)[ #]*0*(\d+)\b")
+FINAL_RE = re.compile(r"\b(?:san pham cuoi|cuoi buoi|cuoi bai|bai nop|deliverables?|final (?:product|submission|output))\b")
+CODE_RE = re.compile(r"```|~~~|^\s*(?:async\s+)?(?:def|class)\s+\w+", re.MULTILINE)
+FENCE_RE = re.compile(r"(```|~~~)(.*?)(?:\1|\Z)", re.DOTALL)
+DEFINITION_RE = re.compile(r"^\s*(?:async\s+)?(?:def|class)\s+\w+.*$", re.MULTILINE)
+# Chi tiết dễ làm học viên mất điểm nếu bịa: tên file, giờ, ngày, tỉ lệ %.
+FACT_RE = re.compile(r"\b[\w\-.]+\.(?:md|py|jsonl?|csv|txt|ipynb|ya?ml|pdf|png|jpe?g|zip|docx|pptx|xlsx|html|sh)\b"
+                     r"|\b\d{1,2}:\d{2}\b|\b\d{1,2}/\d{1,2}(?:/\d{2,4})?\b|\b\d{1,3}(?:[.,]\d+)?\s?%")
 
 SAFE_REFUSE = ("QUYẾT ĐỊNH: refuse\nMình không làm được yêu cầu này. "
                "Bạn xem lại tài liệu hướng dẫn của lab hoặc hỏi lab coach nhé.")
 SAFE_NOT_FOUND = ("QUYẾT ĐỊNH: not_found\nMình chưa tìm được căn cứ chắc chắn trong tài liệu lab cho câu này. "
                   "Bạn hỏi lab coach để có câu trả lời chính xác nhé.")
+NOT_FOUND = "trả lời not_found"
 
 
 def _plain(text: str) -> str:
@@ -66,13 +85,15 @@ def detect_lab(text: str):
     return (known or nums or [None])[0]
 
 
-def parse_decision(output: str):
-    """Lấy quyết định từ dòng 'QUYẾT ĐỊNH: …' trong 3 dòng đầu không trống. Không có → None (không đoán)."""
-    for line in [ln for ln in (output or "").splitlines() if ln.strip()][:3]:
-        m = re.match(r"^\W*quyet dinh\W*:\s*\W*([a-z_]+)", _plain(line))
+def split_decision(output: str):
+    """(nhánh ở dòng 'QUYẾT ĐỊNH: …' trong 3 dòng đầu không trống hoặc None, phần còn lại).
+    Dòng ghi lấp lửng ("answer / refuse") không được nhận."""
+    lines = (output or "").lstrip("﻿").splitlines()
+    for i in [i for i, ln in enumerate(lines) if ln.strip()][:3]:
+        m = re.match(r"^\W*quyet dinh\W*:\W*([a-z_]+)\W*$", _plain(lines[i]))
         if m and m.group(1) in DECISIONS:
-            return m.group(1)
-    return None
+            return m.group(1), "\n".join(lines[:i] + lines[i + 1:]).strip()
+    return None, (output or "").strip()
 
 
 def build_user(text: str, lab_num, found: list, retry_reason: str = "") -> str:
@@ -92,19 +113,96 @@ def build_user(text: str, lab_num, found: list, retry_reason: str = "") -> str:
     return "\n\n".join(parts)
 
 
-def problem_of(decision, check, output, strict) -> str:
-    """Lý do cần tra lại (chuỗi rỗng = ổn). strict=False với model giả (output giả không có QUYẾT ĐỊNH)."""
-    if strict and decision is None:
+def merge(first: list, second: list) -> list:
+    """Nối hai danh sách mục, giữ thứ tự, bỏ mục trùng mã."""
+    seen = {p["code"] for p in first}
+    return first + [p for p in second if p["code"] not in seen]
+
+
+def _clean(text: str) -> str:
+    """Bỏ dấu ** và dấu ` đơn (giữ ```), để mã trích dẫn model chép lại vẫn khớp mã trong căn cứ."""
+    text = unicodedata.normalize("NFC", text).replace("**", "")
+    return re.sub(r"(?<!`)`(?!`)", "", text)
+
+
+def split_citations(body: str, found: list):
+    """(số trích dẫn khớp mã trong căn cứ đã đưa, phần chữ còn lại sau khi bỏ chúng).
+    So đúng từng mã nên heading có chứa [ ] vẫn nhận ra."""
+    rest, count = _clean(body), 0
+    for code in sorted((_clean(p["code"]) for p in found), key=len, reverse=True):
+        pattern = r"\[\s*" + r"\s+".join(map(re.escape, code.split())) + r"\s*\]"
+        rest, n = re.subn(pattern, " ", rest, flags=re.IGNORECASE)
+        count += n
+    return count, rest
+
+
+def _comparable(text: str) -> str:
+    """Để so chi tiết: gộp khoảng trắng, chữ thường; "23h59" → "23:59", "12h" → "12:00"."""
+    text = " ".join(unicodedata.normalize("NFKC", text).split()).casefold()
+    text = re.sub(r"(\d)\s?h(\d{2})", r"\1:\2", text)
+    return re.sub(r"\b(\d{1,2})h\b", r"\1:00", text)
+
+
+def find_problem(decision, body: str, found: list, question: str, lab_num) -> str:
+    """Lý do không được đưa nội dung của model cho học viên (chuỗi rỗng = ổn)."""
+    check = verify_citations(body)  # gọi ở mọi nhánh để trace luôn có bước kiểm
+    if decision is None:
         return "output không có dòng QUYẾT ĐỊNH"
-    if decision == "refuse" and CODE_RE.search(output or ""):
+    if decision == "not_found":
+        return NOT_FOUND
+    if decision == "refuse" and CODE_RE.search(body):
         return "từ chối nhưng vẫn có code"
     if check["invalid"]:
         return "có trích dẫn không tồn tại: " + ", ".join(check["invalid"][:3])
-    if decision == "answer" and check["count"] == 0:
+    cited, rest = split_citations(body, found)
+    rest = unicodedata.normalize("NFKC", rest)
+    if ".md#" in rest.casefold() or "【" in rest:
+        return "trích dẫn nằm ngoài căn cứ đã đưa hoặc sai dạng"
+    if decision == "answer" and not cited:
         return "trả lời answer nhưng không có trích dẫn"
-    if decision == "not_found":
-        return "trả lời not_found"
+    if decision == "answer" and lab_num is not None and lab_num not in LABS_KNOWN:
+        return "trả lời answer cho lab không có trong 5 lab"
+    if not body:
+        return "không có nội dung"
+    if decision == "ask_back" and (len(body) > MAX_QUESTION_BACK or not 1 <= body.count("?") <= 2):
+        return "hỏi lại phải là câu hỏi ngắn"
+
+    corpus = _comparable(" ".join("%s %s" % (p["code"], p["text"]) for p in found))
+    blocks = [block.split("\n", 1)[-1] for _, block in FENCE_RE.findall(rest)]  # bỏ dòng ghi tên ngôn ngữ
+    if any(_comparable(code) not in corpus for code in blocks + DEFINITION_RE.findall(rest)):
+        return "có code không có trong căn cứ"
+    allowed = set(FACT_RE.findall(corpus))
+    if decision == "refuse":  # lời từ chối được nhắc lại tên file / giờ mà câu hỏi đã nêu
+        allowed |= set(FACT_RE.findall(_comparable(question)))
+    unknown = [f for f in FACT_RE.findall(_comparable(rest)) if f not in allowed]
+    if unknown:
+        return "tên file / giờ / ngày / %% không có trong căn cứ: %s" % ", ".join(unknown[:3])
+    if any(len(line) >= 60 and line in body for line in SYSTEM.splitlines()):
+        return "chép lại hướng dẫn hệ thống"
     return ""
+
+
+def safe_refuse(found: list) -> str:
+    pointer = "\nMục liên quan nhất tra được: [%s]" % found[0]["code"] if found else ""
+    return SAFE_REFUSE + pointer
+
+
+def ask_checkpoint(lab, checkpoints: list) -> str:
+    """Câu hỏi lại do code viết, khi không mục nào ghi mốc được hỏi."""
+    names = ", ".join("CP%d" % n for n in checkpoints)
+    where = "lab Day%02d" % lab if lab else "các lab hiện có"
+    example = "Day%02d cần nộp gì" % lab if lab else "Day mấy cần nộp gì"
+    return ("QUYẾT ĐỊNH: ask_back\n"
+            "Mình không thấy mục nào ghi %s trong tài liệu %s. Bạn cần danh sách phải nộp của cả bài "
+            "(hỏi: \"%s\"), hay một phần việc cụ thể nào? Nếu vẫn không rõ, hãy hỏi lab coach."
+            % (names, where, example))
+
+
+def _ask(text, lab_num, found, retry_reason=""):
+    reply = call_model(SYSTEM, build_user(text, lab_num, found, retry_reason=retry_reason))
+    decision, body = split_decision(reply["text"])
+    problem = find_problem(decision, body, found, text, lab_num)
+    return reply, decision, body, problem
 
 
 def answer(text: str) -> dict:
@@ -115,36 +213,45 @@ def answer(text: str) -> dict:
 
     # ② tra căn cứ
     found = search_guides(text, lab=lab, k=K)
+    plain = " ".join(_plain(text).split())
+    if FINAL_RE.search(plain):  # chữ hỏi không khớp mục nộp bài → tra thêm đúng mục đó, đặt lên đầu
+        found = merge(search_guides(FINAL_QUERY, lab=lab, k=K), found)
+    checkpoints = sorted({int(n) for n in CHECKPOINT_RE.findall(plain)})
+    missing = False
+    if checkpoints:
+        exact = search_guides(" ".join("CP%d" % n for n in checkpoints), lab=lab, k=K)
+        missing = not exact
+        found = [] if missing else merge(exact, found)  # mục khớp từ khác không phải căn cứ cho mốc được hỏi
 
-    # ③ model viết trả lời
-    reply = call_model(SYSTEM, build_user(text, lab_num, found))
-    output = reply["text"]
-    strict = reply.get("model") != "fake"
-    decision = parse_decision(output)
-    if decision is None:
-        note("không có dòng QUYẾT ĐỊNH trong output" + ("" if strict else " (model giả)"))
+    # ③ model viết trả lời  ④ code kiểm
+    reply, decision, body, problem = _ask(text, lab_num, found)
 
-    # ④ kiểm trích dẫn
-    reason = problem_of(decision, verify_citations(output), output, strict)
-    if reason == "trả lời not_found" and lab_num is not None and lab_num not in LABS_KNOWN:
-        reason = ""   # lab ngoài 5 repo: not_found là đúng, tra lại không thêm gì
-    if not reason:
-        return {"output": output}
+    if not found:  # không có căn cứ: chỉ được từ chối, hỏi lại hoặc not_found
+        note("không có căn cứ: %s" % ("không mục nào ghi mốc được hỏi" if missing else "không mục nào khớp"))
+        if decision == "refuse":
+            return {"output": SAFE_REFUSE if problem else "QUYẾT ĐỊNH: refuse\n" + body}
+        if decision == "ask_back" and not problem:
+            return {"output": "QUYẾT ĐỊNH: ask_back\n" + body}
+        return {"output": ask_checkpoint(lab, checkpoints) if missing else SAFE_NOT_FOUND}
 
-    # ⑤ tra lại đúng 1 lần, do code quyết
-    note("tra lại: " + reason)
-    extra = search_guides(text + " " + RETRY_TERMS, lab=lab, k=K)
-    seen = {p["code"] for p in found}
-    merged = found + [p for p in extra if p["code"] not in seen]
-    if reason == "trả lời not_found" and len(merged) == len(found):
-        note("tra lại không thêm mục mới — giữ not_found")
-        return {"output": output}
-    reply = call_model(SYSTEM, build_user(text, lab_num, merged, retry_reason=reason))
-    output = reply["text"]
-    decision = parse_decision(output)
+    if reply.get("model") == "fake":  # chế độ giả: đã đi qua tra cứu và kiểm, trả nguyên câu giả
+        note("model giả, không chặn: %s" % (problem or "qua kiểm"))
+        return {"output": reply["text"]}
 
-    why = problem_of(decision, verify_citations(output), output, strict)
-    if why and why != "trả lời not_found":   # not_found lần 2 là câu trả lời thật, giữ nguyên
-        note("chặn: " + why + " — hạ về câu an toàn")
-        output = SAFE_REFUSE if decision == "refuse" else SAFE_NOT_FOUND
-    return {"output": output}
+    if problem == NOT_FOUND and lab_num is not None and lab_num not in LABS_KNOWN:
+        return {"output": SAFE_NOT_FOUND}   # lab ngoài 5 repo: not_found là đúng, tra lại không thêm gì
+
+    if problem:  # ⑤ tra lại đúng 1 lần, do code quyết
+        note("tra lại: " + problem)
+        wider = merge(found, search_guides(text + " " + RETRY_TERMS, lab=lab, k=K))
+        if problem == NOT_FOUND and len(wider) == len(found):
+            note("tra lại không thêm mục mới — giữ not_found")
+            return {"output": SAFE_NOT_FOUND}
+        found = wider
+        reply, decision, body, problem = _ask(text, lab_num, found, retry_reason=problem)
+
+    if problem:
+        if problem != NOT_FOUND:
+            note("chặn: " + problem + " — hạ về câu an toàn")
+        return {"output": safe_refuse(found) if decision == "refuse" else SAFE_NOT_FOUND}
+    return {"output": "QUYẾT ĐỊNH: %s\n%s" % (decision, body)}
