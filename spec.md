@@ -11,12 +11,11 @@ Data BTC cấp đã dùng (nếu có — không commit nguyên file): **không d
 - Công cụ / AI đang được dùng cho việc này (nếu có) + nguồn. Không kiểm được thì ghi "chưa kiểm":
 
 ## §1. Người dùng & bằng chứng *(guide 1.1, 1.2)*
-*(Nháp CP2 — đủ ở CP3.)*
 - Người dùng chính (một vai cụ thể): học viên L3 (L3A, L3B) khoá AI20K K5 đang làm bài lab theo nhóm tại lớp.
 - Việc họ cố làm xong (`động từ + đối tượng + bối cảnh`, không có chữ AI): **nộp đúng và đủ** bài lab (tên repo, file, hạn, checkpoint) **trong buổi lab**, khi yêu cầu nằm rải ở 6–23 file `.md` của repo lab.
-- Hôm nay họ giải bằng gì, hỏng ở đâu, vì sao chưa bỏ: dán hướng dẫn vào ChatGPT / Claude / Gemini (20/22), đọc lại / tìm trong file (15/22), hỏi bạn cùng nhóm (10/22), hỏi lab coach (5/22). Hỏng: AI chung không trỏ về mục nguồn để kiểm, và "làm nhanh thì coi như cho AI làm hết" (khảo sát câu 10); đọc tay thì chậm vì file dẫn chiếu nhau. Chưa bỏ vì nhanh hơn tự đọc.
-- Pain (KHÔNG chữ AI): học viên L3 K5 — đang làm lab trên lớp — phải tự gom yêu cầu nộp từ nhiều file hướng dẫn dẫn chiếu nhau — mất ≥15 phút mỗi lab chỉ để tìm yêu cầu (13/22) và từng nộp thiếu / sai ≥1 lần (14/22).
-- Bằng chứng — số chính + kết luận (chi tiết: `evidence/summary.md`): khảo sát n = 22 (23 phản hồi, bỏ 1 lab coach; còn gồm 1 học viên L2 chưa lọc; không thành viên nhóm nào điền): 13/22 (59,1%) mất ≥15 phút · 14/22 (63,6%) từng nộp thiếu / sai · 13/22 từng thấy hai file ghi khác nhau → giả thuyết **đúng tạm thời**, chờ lọc học viên L3 và phỏng vấn kiểm lại.
+- Hôm nay họ giải bằng gì, hỏng ở đâu, vì sao chưa bỏ: dán hướng dẫn vào ChatGPT / Claude / Gemini (20/23), đọc lại / tìm trong file (15/23), hỏi bạn cùng nhóm (10/23), hỏi lab coach / TA (4/23) — khảo sát câu 5, chọn nhiều. Hỏng: AI chung không trỏ về mục nguồn để kiểm, và "làm nhanh thì coi như cho AI làm hết" (khảo sát câu 10); đọc tay thì chậm vì file dẫn chiếu nhau. Chưa bỏ vì nhanh hơn tự đọc.
+- Pain (KHÔNG chữ AI): học viên L3 K5 — đang làm lab trên lớp — phải tự gom yêu cầu nộp từ nhiều file hướng dẫn dẫn chiếu nhau — mất ≥15 phút mỗi lab chỉ để tìm yêu cầu (14/23) và từng nộp thiếu / sai ≥1 lần (16/23).
+- Bằng chứng — số chính + kết luận (chi tiết: `evidence/summary.md`, `evidence/survey/phan-tich-lan2.md`): khảo sát **N = 23 học viên L3 ngoài nhóm** (25 phản hồi, bỏ 1 học viên L2 và 1 lab coach; không thành viên nhóm nào điền): 14/23 (60,9%) mất ≥15 phút · 16/23 (69,6%) từng nộp thiếu / sai · 12/23 (52,2%) từng thấy hai file ghi khác nhau → giả thuyết **đúng**. Phỏng vấn kiểm lại: 1/3 người đã xong (P1: mở 4–5 tab vì file dẫn chiếu nhau, tự đọc >30 phút, nhóm từng bỏ sót 1 checkpoint), P2–P3 đang làm.
 
 ## §2. Impact & quyết định chọn *(guide 1.3)*
 
