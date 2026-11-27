@@ -7,7 +7,7 @@
 - Tên nhóm: TayDuKy
 - Lớp: L3A
 - Track: A
-- Link repo: ____
+- Link repo: https://github.com/copengoknghek/K5-Day15-L3A-TayDuKy
 
 | STT | Họ và tên | Mã học viên | Vai trò | Phần việc chính |
 |---|---|---|---|---|
