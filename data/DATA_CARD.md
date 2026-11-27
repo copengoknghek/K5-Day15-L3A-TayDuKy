@@ -19,7 +19,7 @@
 | | |
 |---|---|
 | Dùng để làm gì | Đo bản chạy thử (`run.py eval`) |
-| Từ đâu | Câu hỏi nhóm tự viết theo 4 lớp chỗ khó; đáp án chuẩn lấy từ Dataset 1 (ghi file nguồn ở cột `source`). Từ CP3 thêm câu hỏi thật từ khảo sát (câu 9, C3) và phỏng vấn, ghi `nguoi_dung: P…` |
-| Số dòng | 16 câu (CP2) → 20–30 câu (CP3) |
-| Nhãn | `tu_viet` (CP2) · `nguoi_dung` (bổ sung ở CP3) |
-| Giới hạn | Đáp án chuẩn do nhóm đọc tay từ tài liệu: cần người thứ hai đối chiếu lại từng câu |
+| Từ đâu | T01–T16 (CP2): nhóm tự viết theo 4 lớp chỗ khó. T17–T26 (CP3): viết lại từ vấn đề **thật** người dùng nêu — khảo sát câu 7 (sai tên repo, sai chỗ nộp link, lỗi email trong file report), câu 9 (file dẫn chiếu nhau, tên repo khác giữa LMS / repo / lab coach), câu 10 (làm nhanh thì cho AI làm hết), C3 (lab coach kể câu "mở cái này sao chạy") và phỏng vấn P1 (nhóm bỏ sót CP2, mở 4–5 tab) — mỗi vấn đề đặt vào một lab cụ thể, bỏ mọi tên người; cột `source` ghi `nguoi_dung: khảo sát câu …` / `nguoi_dung: P1`. Đáp án chuẩn lấy từ Dataset 1, mã mục đã kiểm bằng `python codebase/tools.py --verify` |
+| Số dòng | **26 câu** (khoá ở CP3): thuong 9 · kho 11 · tu_choi 6 · nhãn mong đợi answer 16 · ask_back 1 · not_found 3 · refuse 6 (T16 nhận cả not_found) · theo lab: Day04 6 · Day07 5 · Day08 7 · Day10 5 · Day11 2 · không nói lab 1 |
+| Nhãn | `tu_viet` 16 câu (T01–T16, CP2) · `nguoi_dung` 10 câu (T17–T26, CP3: khảo sát 9 câu, P1 1 câu; T22 dùng cả khảo sát và P1) → từ người dùng 10/26 (≥ 1/3), in bởi `python run.py check` |
+| Giới hạn | Đáp án chuẩn do nhóm đọc tay từ tài liệu; người thứ hai (Duyên) đối chiếu từng câu mới trước khi khoá · câu `nguoi_dung` là vấn đề người dùng nêu được **nhóm viết lại** thành câu hỏi về một lab, không phải nguyên văn câu họ hỏi · khảo sát chưa lọc học viên L3 ngoài nhóm (xem `evidence/survey/`), P1 là một người · chỉ phủ 5 lab, Day11 ít câu (2) |
