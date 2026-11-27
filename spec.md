@@ -30,10 +30,9 @@ Data BTC cấp đã dùng (nếu có — không commit nguyên file): **không d
 - Số lần / tháng của từng kiểu người dùng (dùng cho persona ở §8):
 
 ## §3. Giải pháp tương tự *(guide 2.1)*
-*(Nháp CP2.)*
-- **Dán README vào ChatGPT / Claude / Gemini** (cách 20/22 học viên đang dùng): đáng học — nhanh, hỏi bằng lời thường · đáng né — không trỏ về `file#mục` nên không kiểm được, có thể bịa hạn / tên file, và làm hộ luôn bài (khảo sát câu 10) · mình khác: chỉ tra 5 repo lab, mọi ý có trích dẫn được code kiểm, từ chối đưa lời giải. *(Tỉ lệ bịa của cách này: chưa kiểm — sẽ đo bằng cùng bộ câu thử ở CP3.)*
-- **Hỏi lab coach / bạn cùng nhóm** (5/22, 10/22): đáng học — biết ngữ cảnh lớp, quyết được ngoại lệ · đáng né — phải chờ, coach trả lời lặp lại cùng câu hỏi (lab coach n = 1 kể 11–20 câu / ca, chỉ là gợi ý) · mình khác: trả lời ngay phần đã có trong file, chuyển coach phần cần người quyết.
-- **Ctrl+F / đọc lại trên GitHub** (15/22): đáng học — luôn đúng nguồn · đáng né — phải biết đúng từ khoá và đúng file, file dẫn chiếu nhau · mình khác: tra mọi file `.md` của lab cùng lúc, bỏ dấu, trả về đúng mục.
+- **Dán README vào ChatGPT / Claude / Gemini** (cách 20/23 học viên đang dùng): đáng học — nhanh, hỏi bằng lời thường · đáng né — không trỏ về `file#mục` nên không kiểm được, có thể bịa hạn / tên file, và làm hộ luôn bài (khảo sát câu 10) · mình khác: chỉ tra 5 repo lab, mọi ý có trích dẫn được code kiểm, từ chối đưa lời giải. *(Tỉ lệ bịa của cách này: chưa kiểm — sẽ đo bằng cùng bộ câu thử ở CP3.)*
+- **Hỏi lab coach / bạn cùng nhóm** (4/23, 10/23): đáng học — biết ngữ cảnh lớp, quyết được ngoại lệ · đáng né — phải chờ, coach trả lời lặp lại cùng câu hỏi (lab coach n = 1 kể 11–20 câu / ca, chỉ là gợi ý) · mình khác: trả lời ngay phần đã có trong file, chuyển coach phần cần người quyết.
+- **Ctrl+F / đọc lại trên GitHub** (15/23): đáng học — luôn đúng nguồn · đáng né — phải biết đúng từ khoá và đúng file, file dẫn chiếu nhau · mình khác: tra mọi file `.md` của lab cùng lúc, bỏ dấu, trả về đúng mục.
 
 ## §4. Thiết kế *(guide 2.2, 3.2)*
 - **Lát cắt MỘT CÂU** (1 người dùng · 1 việc · 1 quyết định AI · 1 kết quả): Một học viên L3 K5 đang làm lab trên lớp hỏi "nộp gì / hạn nào / checkpoint X cần gì" → AI tra các file hướng dẫn `.md` của 5 repo lab L3 K5 rồi **quyết định** trả lời kèm trích `[repo/file.md#mục]`, hỏi lại một câu, nói "tài liệu không ghi, hỏi lab coach", hay từ chối → học viên biết đúng yêu cầu nộp mà không phải tự gom từ nhiều file.
