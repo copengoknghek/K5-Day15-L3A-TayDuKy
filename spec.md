@@ -49,7 +49,7 @@ flowchart TD
     S1 --> X["② bổ sung (code)<br/>hỏi sản phẩm cuối / deliverable → tra thêm danh sách bài nộp<br/>hỏi CP N → tra riêng CP N"]
     S0 --> X
     X -->|"có căn cứ"| M["③ call_model(SYSTEM, căn cứ + câu hỏi)<br/>dòng đầu: QUYẾT ĐỊNH: answer / ask_back / not_found / refuse"]
-    X -->|"không mục nào khớp · không mục nào ghi CP N"| E["Không có căn cứ: gọi model 1 lần, không tra lại<br/>chỉ giữ refuse hoặc ask_back qua kiểm<br/>còn lại code hỏi lại (CP N) hoặc not_found"]
+    X -->|"không mục nào khớp · không mục nào ghi CP N · hỏi giai đoạn N không nói CP"| E["Không có căn cứ: gọi model 1 lần, không tra lại<br/>giữ refuse; ask_back của model nếu qua kiểm<br/>còn lại code hỏi lại (CP N) hoặc not_found<br/>giai đoạn N: ngoài refuse, code luôn hỏi lại 'có phải CP N không'"]
     E --> OUT[Trả lời học viên]
     M --> V{"④ code kiểm<br/>verify_citations + find_problem"}
     V -->|"qua"| OUT
@@ -138,7 +138,8 @@ flowchart TD
 
 | Thời điểm | Đổi gì | Vì sao (trỏ về câu thử / lỗi / bằng chứng nào) |
 |---|---|---|
-|  |  |  |
+| 27/11 | Hỏi "giai đoạn N" mà không nói CP → code hỏi lại "có phải CP N không" (`agent.py`, §4) | Thử `search_guides` trên 5 lab: "giai đoạn 3 cần làm gì" không ra mục CP3 trong 5 kết quả đầu |
+| 27/11 ~23:00 | Nối model thật (`ai.py`, OpenAI `gpt-4o-mini`). Prompt: không nêu lab mà đáp án tuỳ lab → `ask_back`; trích dẫn đặt cuối ý, không chép link Markdown; liệt kê đủ mục phải nộp. Câu hỏi "nộp gì" (không nhắc CP) tra thêm danh sách bài nộp (`agent.py`) | Chạy dò với model thật trước lượt 1, **có dùng một số câu trong bộ thử** (không chép câu thử vào code): T07 ra `not_found` thay vì hỏi lại; "Day11 cần nộp những gì" trả lời thiếu mục |
 
 **Sau CP4 (đến 23:59 Thứ Bảy 28/11)** (sửa theo góp ý — không sửa chuẩn "đạt", câu thử, số bằng chứng, kết quả các lượt đã chạy)
 
