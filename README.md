@@ -41,6 +41,7 @@ Gõ `dir` (Windows) hoặc `ls` (macOS / Linux): thấy `run.py` và `README.md`
 | Việc | Windows (PowerShell) | macOS / Linux |
 |---|---|---|
 | Kiểm Python | `python --version` (không được thì `py --version`) | `python3 --version` |
+| Tải tài liệu 5 lab vào `data/labs/` (làm một lần, cần có `git` và mạng) | `python codebase/fetch_labs.py` | `python3 codebase/fetch_labs.py` |
 | Chạy bản chạy thử (chế độ giả, chưa gọi model) | `python run.py` | `python3 run.py` |
 | Kiểm bộ câu thử | `python run.py check` | `python3 run.py check` |
 | Tạo file `.env` để nối model | `copy .env.example .env` | `cp .env.example .env` |
