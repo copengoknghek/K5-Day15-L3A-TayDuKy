@@ -41,7 +41,7 @@ Track A · EdTech, hướng A6 "Hỗ trợ lab" — **không đổi track**. Lá
 
 - Model còn **chế độ giả**; nối model thật ở CP3.
 - Chấm thử 2 người: **chưa làm** (đề đã in sẵn).
-- Đối chiếu đáp án 16 câu: **chưa làm** (mục nguồn đã in sẵn).
+- Đối chiếu đáp án 16 câu: **đã làm** — AI (Claude) đối chiếu trước, Duyên kiểm lại. T08 bổ sung ý README / RULES / CHECKPOINTS của Day11 còn ghi K4; đáp án vẫn là K5.
 - Chưa có câu thử từ lời người dùng (0/16; CP3 cần ≥1/3 và 20–30 câu).
 - Lịch phỏng vấn: chờ chi tiết.
 - Số khảo sát chưa lọc riêng học viên L3.
