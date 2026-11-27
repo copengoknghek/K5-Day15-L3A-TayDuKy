@@ -42,13 +42,13 @@ Gõ `dir` (Windows) hoặc `ls` (macOS / Linux): thấy `run.py` và `README.md`
 |---|---|---|
 | Kiểm Python | `python --version` (không được thì `py --version`) | `python3 --version` |
 | Tải tài liệu 5 lab vào `data/labs/` (làm một lần, cần có `git` và mạng) | `python codebase/fetch_labs.py` | `python3 codebase/fetch_labs.py` |
-| Chạy bản chạy thử (chế độ giả, chưa gọi model) | `python run.py` | `python3 run.py` |
+| Chạy bản chạy thử (chưa có `.env` thì chạy chế độ giả) | `python run.py` | `python3 run.py` |
 | Kiểm bộ câu thử | `python run.py check` | `python3 run.py check` |
 | Tạo file `.env` để nối model | `copy .env.example .env` | `cp .env.example .env` |
 
 - Windows: gõ `python` mà mở Microsoft Store hoặc báo không có lệnh → dùng `py`. Chưa có Python: cài từ python.org, **tick "Add python.exe to PATH"**, mở lại PowerShell.
 - macOS: báo `command not found: python` là bình thường → dùng `python3`.
-- `python run.py` in ra "[câu trả lời giả — chưa nối model] …" là khung chạy đúng. Nối model thật: [docs/connect-model.md](docs/connect-model.md).
+- Chưa có `.env`: `python run.py` in "[câu trả lời giả — chưa nối model] …" là khung chạy đúng. Nối model thật: điền `MODEL_PROVIDER`, `MODEL_NAME`, `API_KEY` trong `.env` (nhóm dùng `openai` · `gpt-4o-mini`; xem [docs/connect-model.md](docs/connect-model.md)). Không commit `.env`.
 
 Trong README này lệnh viết là `python …`; máy nhóm cần `python3` hay `py` thì gõ thay.
 
@@ -88,16 +88,17 @@ Nhóm dùng stack khác (Node, Streamlit, notebook…): sửa hàm `run_app()` t
 
 | Thành phần | Thật / Giả | Ghi chú |
 |---|---|---|
-| Lời gọi AI ở quyết định trung tâm | **Giả ở CP2** (thật bắt buộc từ CP3) | `codebase/ai.py` chế độ `fake`: trả câu giả cố định, token 0. Model: ____ (chọn khi nối ở CP3) |
+| Lời gọi AI ở quyết định trung tâm | **Thật** (từ CP3) | OpenAI `gpt-4o-mini`, temperature 0, qua `codebase/ai.py`; token lấy từ phản hồi API. Chưa có `.env` thì chạy chế độ giả (câu cố định, token 0) |
 | Dữ liệu tra cứu | **Thật** | 5 repo lab L3 K5 công khai, 67 file `.md`, 453 mục, clone 27/11/2026 (`data/DATA_CARD.md`) — không commit |
 | `search_guides` (tra mục) | **Thật** | BM25 trên từ khoá bỏ dấu, dữ liệu thật; chưa có embedding |
 | `verify_citations` (kiểm trích dẫn) | **Thật** | So từng `[repo/file.md#heading]` với mục có thật |
-| Bước tra lại + chặn (A+) | **Thật trong code, chưa chạy với model** | Model giả không có dòng `QUYẾT ĐỊNH:` nên không kích hoạt; đã thử bằng model giả lập ngoài repo |
-| Bộ câu thử | Thật, tự viết | 16 câu `tu_viet`, chưa có câu từ người dùng |
+| Bước tra lại + chặn (A+) | **Thật** | Đã chạy với model thật trong các lượt chạy dò; chế độ giả không kích hoạt |
+| Bộ câu thử | **Thật** | 26 câu: 16 `tu_viet` · 10 `nguoi_dung` (nhóm viết lại thành câu hỏi từ vấn đề người dùng nêu trong khảo sát và phỏng vấn) |
+| Giao diện, nhớ hội thoại | **Chưa có** | Bản chạy thử là dòng lệnh, mỗi câu hỏi là một lượt riêng |
 
 ## Dùng AI vào việc gì
 
-Nhóm dùng Claude Code (Sonnet) viết nháp code `codebase/` (tải tài liệu lab, tra cứu, kiểm trích dẫn, luồng A+) và nháp tài liệu CP2 từ số nhóm đưa; một subagent Claude review code trước khi nhận. Người có tên ở từng phần đọc lại, chạy thử và sửa; số khảo sát, trích dẫn, đáp án câu thử do người đọc từ nguồn, không do AI tạo. Chi tiết: [docs/ai-usage.md](docs/ai-usage.md). Coding agent đọc [AGENTS.md](AGENTS.md).
+Nhóm dùng Claude Code (Sonnet) viết nháp code `codebase/` (tải tài liệu lab, tra cứu, kiểm trích dẫn, luồng A+), hỗ trợ nối model và chỉnh prompt / bước chặn, và nháp tài liệu từ số nhóm đưa; một subagent Claude review code ở CP2. Trong sản phẩm, model `gpt-4o-mini` chọn nhánh trả lời và viết nội dung. Người có tên ở từng phần đọc lại, chạy thử và sửa; số khảo sát, trích dẫn, đáp án câu thử do người đọc từ nguồn, không do AI tạo. Chi tiết: [docs/ai-usage.md](docs/ai-usage.md). Coding agent đọc [AGENTS.md](AGENTS.md).
 
 ## File mẫu — điền ở bước nào
 
