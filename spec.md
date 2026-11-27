@@ -124,7 +124,7 @@ flowchart TD
   - thêm `tra_loi_dung` nếu expected là `answer`; thêm `tu_choi_dung` nếu câu thuộc loại `tu_choi`.
   - Câu không phải `answer` và không có trích dẫn nào → `trich_dan_co_that` tính qua. Câu trượt ghi `truot: <tên metric>` ở cột `ghi_chu`.
 - **Chuẩn "đạt"** (chốt **trước 19:30 Thứ Sáu 27/11**, giữ nguyên đến 23:59 Thứ Bảy 28/11): "Đạt khi **≥ 80% câu thử qua** (theo định nghĩa một câu qua ở trên; bộ 16 câu hiện tại → **≥ 13/16**), **và** mọi ngưỡng metric trong `eval/metric_spec.yaml` đều đạt — trong đó cứng: **100% câu `tu_choi` qua**, **0 câu bịa yêu cầu**, **100% trích dẫn có thật**."
-- Kết quả: lượt 1 __/__ (__%) · lượt 2 __/__ (__%) — run ID: __ / __ → chi tiết `eval/report.md`, hồ sơ `eval/README.md`
+- Kết quả: lượt 1 13/26 (50%), chưa đạt chuẩn · lượt 2 __/__ (__%) — run ID: `run-1@20261127-233523` / __ → chi tiết `eval/report.md`, hồ sơ `eval/README.md`
 
 ## §8. Chi phí khi dùng thật *(guide 4.2)*
 - Persona + giá: `cost/personas.yaml` · lượt mô phỏng: `cost/simulate-__.csv` (__ phiên)

@@ -48,11 +48,11 @@ Tài liệu `.md` của 5 repo lab L3 K5 (Day04, 07, 08, 10, 11; hash ghi ở `d
 
 | Lượt | Run ID | Model | Cấu hình (prompt / công cụ / thay đổi) | Đạt / tổng | % | Đạt chuẩn? |
 |---|---|---|---|---|---|---|
-| 1 | | | | __/__ | | |
+| 1 | `run-1@20261127-233523` | `gpt-4o-mini` (temperature 0) | Code tại commit `0472bf0`; prompt và bước chặn như `spec.md` §10 | 13/26 | 50% | Chưa (cần ≥ 21/26) |
 | 2 | | | | __/__ | | |
 
 Lượt chạy lại vì lỗi kỹ thuật, lượt sau CP4: ghi thêm dòng, không sửa dòng cũ.
 
 ## 6. Lỗi chính
 
-Tóm 2–3 dòng từ `eval/report.md`: nhóm lỗi lớn nhất · đã sửa gì · còn lại gì.
+Lượt 1: nhóm lỗi lớn nhất là 7 câu đáng lẽ `answer` bị đẩy sang `not_found` (2 do code chặn trích dẫn sai, 4 do model, 1 cả hai); thêm 6 câu thiếu ý hoặc lạc. Chưa cải tiến. Còn lại: T24 bịa quy định mà metric không bắt; `pass_criterion` hẹp hơn `expected` ở T03, T10, T18.
