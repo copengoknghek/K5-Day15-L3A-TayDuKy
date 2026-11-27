@@ -80,6 +80,7 @@ flowchart TD
   | Người giữ quyết định đắt *(mã G: nhóm ghép)* | Nhánh nét đứt tới lab coach: gia hạn, ngoại lệ, điểm, mâu thuẫn |
 
 - **Phần nào còn giả:** model đang ở **chế độ giả** (`codebase/ai.py`, `MODEL_PROVIDER=fake`) — output là câu giả cố định, không có dòng `QUYẾT ĐỊNH:` nên nhánh ⑤ chưa chạy trong `run.py`; nhánh tra lại / chặn đã thử bằng model giả lập ngoài repo. Tra cứu là BM25 trên từ khoá (chưa có embedding). Dữ liệu lab là **thật** (clone ngày 27/11/2026). Nối model thật ở CP3.
+- **Thiếu dữ liệu:** chưa tải `data/labs/` thì công cụ báo lỗi kèm lệnh `python codebase/fetch_labs.py` (`python run.py` in lỗi rồi cho hỏi tiếp). Cố ý không trả danh sách rỗng, để trợ lý không nói "không có trong tài liệu" chỉ vì thiếu dữ liệu.
 
 ## §5. Chỗ khó — 4 lớp + ≥6 kịch bản + 2 tấn công *(guide 2.3)*
 

@@ -87,7 +87,9 @@ def _file_sections(text):
 
 @functools.lru_cache(maxsize=None)
 def _index():
-    """Đọc 5 repo một lần: {mã mục: thông tin mục}."""
+    """Đọc 5 repo một lần: {mã mục: thông tin mục}.
+    Thiếu repo thì báo lỗi, không trả danh sách rỗng: nếu không, trợ lý sẽ nói "không có trong tài liệu"
+    chỉ vì chưa tải, và lượt đánh giá ra số sai mà không ai biết."""
     missing = [repo for _, repo, _ in LABS if not os.path.isdir(os.path.join(LABS_DIR, repo))]
     if missing:
         raise FileNotFoundError("Chưa có %d repo lab trong data/labs/ — chạy: python codebase/fetch_labs.py"
@@ -189,12 +191,6 @@ def verify_citations(text: str) -> dict:
     cited = _citations(text)
     invalid = [c for c in cited if _key(c) not in index]
     return {"ok": not invalid, "invalid": invalid, "count": len(cited)}
-
-
-@tool
-def search_example(query: str) -> list:
-    """(ví dụ của khung — xoá khi agent.py đã dùng search_guides) Trả dữ liệu giả. Không tác động ra ngoài."""
-    return [{"code": "VD-1", "text": "(ví dụ) đoạn dữ liệu giả — thay bằng dữ liệu thật của bài toán"}]
 
 
 def _try(argv):
