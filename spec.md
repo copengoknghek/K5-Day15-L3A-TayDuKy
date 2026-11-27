@@ -7,8 +7,12 @@ Track: [x] A · [ ] B · [ ] C · [ ] D · [ ] E — bài toán: hướng **A6 "
 Data BTC cấp đã dùng (nếu có — không commit nguyên file): **không dùng**. Dữ liệu là tài liệu `.md` của 5 repo lab công khai của khoá, clone vào `data/labs/` (gitignore) — `data/DATA_CARD.md`
 
 ## §0. Hiện tại việc này diễn ra thế nào *(guide 1.1)*
-- Luồng hiện tại của việc này, trong khoá hoặc trên app thật (3–5 bước; ảnh chụp từ tài khoản của mình, đã che thông tin):
-- Công cụ / AI đang được dùng cho việc này (nếu có) + nguồn. Không kiểm được thì ghi "chưa kiểm":
+- Luồng hiện tại của việc này trong khoá (4 bước, tổng hợp từ trải nghiệm học trên lớp L3A và khảo sát `N = 23` ở `evidence/survey/phan-tich-lan2.md`):
+  1. Giảng viên / LMS gửi link repo lab công khai của khoá trên GitHub (`VinUni-AI20k`); mỗi repo L3 có **6–23 file `.md`** (`README`, `CHECKPOINTS`, `RUBRIC`, `RULES`, `SUBMISSION`, `GUIDE`, `docs/…` — `data/DATA_CARD.md`).
+  2. Học viên mở nhiều tab file `.md` (13/23 mở ≥4 file; P1 mở 4–5 tab) để tự gom yêu cầu đặt tên repo, file phải nộp, mốc checkpoint và hạn nộp.
+  3. Khi thông tin dẫn chiếu chéo hoặc hai file ghi khác nhau (12/23 từng gặp), học viên tự xoay xở bằng cách dán hướng dẫn vào ChatGPT / Claude / Gemini (20/23), đọc lại file (15/23), hỏi bạn cùng nhóm (10/23), hỏi lab coach / TA (4/23) hoặc đoán rồi làm tiếp (3/23).
+  4. Nhóm nộp bài lên GitHub / LMS / form checkpoint; 16/23 từng phát hiện làm thiếu hoặc sai yêu cầu ≥1 lần (sai tên repo, nhầm email trong `report_team.md`, sai link nộp).
+- Công cụ / AI đang được dùng cho việc này + nguồn: **chưa có** công cụ tra cứu hướng dẫn lab chuyên biệt gắn với repo của khoá *(chưa kiểm bên ngoài L3A/L3B)*. Trên thực tế, **20/23 (87,0%)** học viên tự dán thủ công vào ChatGPT / Claude / Gemini (`evidence/survey/phan-tich-lan2.md`, câu 5 & câu 10).
 
 ## §1. Người dùng & bằng chứng *(guide 1.1, 1.2)*
 - Người dùng chính (một vai cụ thể): học viên L3 (L3A, L3B) khoá AI20K K5 đang làm bài lab theo nhóm tại lớp.
@@ -21,16 +25,22 @@ Data BTC cấp đã dùng (nếu có — không commit nguyên file): **không d
 
 | Hướng | Bao nhiêu người gặp | Bao nhiêu lần / tháng | Mỗi lần tốn gì | Impact / tháng | Làm kịp không | Chọn? |
 |---|---|---|---|---|---|---|
-|  |  |  |  |  |  |  |
-|  |  |  |  |  |  |  |
-|  |  |  |  |  |  |  |
+| **A6 · Tra cứu yêu cầu nộp & checkpoint có trích nguồn `file#mục`** | ~700 học viên L3 (`02-guide.md` 4.2); trong đó 60,9% (14/23) mất ≥15' và 69,6% (16/23) từng nộp thiếu/sai | ~12 buổi lab *(tự ước tính theo tiến độ 15 ngày GĐ1)* | TB ~23,5 phút/lab *(tự ước tính từ điểm giữa khoảng câu 4; trung vị 15–30')* + rủi ro mất điểm nộp sai | **~197.400 phút (~3.290 giờ/tháng)** toàn L3 *(bảo thủ chỉ tính nhóm ≥15': ~1.278 giờ/tháng)* | Có (workflow cố định A+, dữ liệu công khai) | **Chọn** |
+| A6 (biến thể) · Giải thích nội dung kỹ thuật / code bài lab | ~183 học viên L3 (26,1% = 6/23 nêu pain `kho_hieu` ở câu 9 × 700) | ~12 buổi lab *(tự ước tính)* | ~15–30 phút/lab *(tự ước tính)* + rủi ro phụ thuộc AI làm hộ bài | ~32.940–65.880 phút (~549–1.098 giờ/tháng) *(tự ước tính)* | Khó đo đúng/sai, dễ vi phạm luật không đưa lời giải | Loại |
+| A2 · Trợ lý trả lời câu hỏi lặp về lab trên Discord / Zalo lớp | ~91 học viên L3 (13,0% = 3/23 chọn hỏi Discord/Zalo khi làm lab ở câu 5 × 700) | ~12 buổi lab *(tự ước tính)* | ~10–15 phút chờ trả lời *(tự ước tính)* | ~10.920–16.380 phút (~182–273 giờ/tháng) *(tự ước tính)* | Không được gắn bot vào Discord thật; thiếu log sạch | Loại |
 
-- **Impact / tháng** của hướng chọn = __ người × __ lần × __ phút = __ — nguồn từng thừa số: __ (không có nguồn thì ghi rõ *(tự ước tính)*)
-- Hướng ĐÃ LOẠI + vì sao (giữ lại, đừng xoá):
-- Số lần / tháng của từng kiểu người dùng (dùng cho persona ở §8):
+- **Impact / tháng** của hướng chọn = **700 người × 12 lần × 23,5 phút = 197.400 phút/tháng (~3.290 giờ/tháng)** (tương đương **~4,7 giờ/học viên/tháng**; mức bảo thủ chỉ tính 60,9% = 426 người mất ≥15 phút: `426 × 12 × 15 = 76.680 phút ≈ 1.278 giờ/tháng`). Cộng thêm thời gian lab coach trả lời câu hỏi lặp đã có trong tài liệu (tham khảo `S06`, n = 1: 11–20 câu/ca, 10–30 phút/ca).
+  - Nguồn từng thừa số: **700 học viên L3** trích từ `02-guide.md` mục 4.2 của repo đề (*"lớp L3 hơn 700 học viên"*) · **12 buổi lab/tháng** *(tự ước tính từ lịch 15 ngày giai đoạn 1, ~3–4 lab/tuần)* · **23,5 phút/lab** *(tự ước tính từ điểm giữa khoảng câu 4 khảo sát lần 2 `N = 23`: Dưới 5' = 2,5' × 1; 5–15' = 10' × 8; 15–30' = 22,5' × 9; 30–60' = 45' × 3; >60' = 60' × 2 → 540 / 23 ≈ 23,5'; trung vị 15–30')*.
+- **Hướng ĐÃ LOẠI + vì sao:**
+  - *Giải thích kỹ thuật / code bài lab:* tỉ lệ nêu trực tiếp thấp hơn (26,1% vs 60,9% mất ≥15' và 69,6% nộp thiếu/sai), rủi ro cao biến thành viết code hộ (trái nguyên tắc A6 và chính lo ngại của học viên `S05` ở câu 10), và khó dựng bộ câu thử có đáp án kiểm chứng khách quan trong 10 giờ.
+  - *Trợ lý Discord / Zalo lớp:* chỉ 13,0% (3/23) dùng kênh này khi kẹt yêu cầu lab (thấp hơn rất nhiều so với 87,0% dùng AI và 65,2% tự đọc file), đồng thời luật hackathon không cho kết nối vào Discord thật của khoá.
+- **Số lần / tháng của từng kiểu người dùng (dùng cho persona ở `cost/personas.yaml` và §8):** *(tự ước tính theo 12 buổi lab/tháng)*
+  - **Dùng ít** (học viên đọc nhanh, hỏi 1–2 câu chốt hạn/tên repo mỗi lab): **~18 lượt/tháng**.
+  - **Dùng vừa** (học viên làm lab bình thường, hỏi ~4 câu/lab cho các mốc checkpoint): **~48 lượt/tháng**.
+  - **Dùng nhiều** (đội trưởng / người phụ trách nộp bài & soát rubric, ~8 câu/lab): **~96 lượt/tháng**.
 
 ## §3. Giải pháp tương tự *(guide 2.1)*
-- **Dán README vào ChatGPT / Claude / Gemini** (cách 20/23 học viên đang dùng): đáng học — nhanh, hỏi bằng lời thường · đáng né — không trỏ về `file#mục` nên không kiểm được, có thể bịa hạn / tên file, và làm hộ luôn bài (khảo sát câu 10) · mình khác: chỉ tra 5 repo lab, mọi ý có trích dẫn được code kiểm, từ chối đưa lời giải. *(Tỉ lệ bịa của cách này: chưa kiểm — sẽ đo bằng cùng bộ câu thử ở CP3.)*
+- **Dán README vào ChatGPT / Claude / Gemini** (cách 20/23 học viên đang dùng): đáng học — nhanh, hỏi bằng lời thường · đáng né — không trỏ về `file#mục` nên không kiểm được, có thể bịa hạn / tên file, và làm hộ luôn bài (khảo sát câu 10) · mình khác: chỉ tra 5 repo lab, mọi ý có trích dẫn được code kiểm, từ chối đưa lời giải. *(Tỉ lệ bịa của cách này: chưa kiểm.)*
 - **Hỏi lab coach / bạn cùng nhóm** (4/23, 10/23): đáng học — biết ngữ cảnh lớp, quyết được ngoại lệ · đáng né — phải chờ, coach trả lời lặp lại cùng câu hỏi (lab coach n = 1 kể 11–20 câu / ca, chỉ là gợi ý) · mình khác: trả lời ngay phần đã có trong file, chuyển coach phần cần người quyết.
 - **Ctrl+F / đọc lại trên GitHub** (15/23): đáng học — luôn đúng nguồn · đáng né — phải biết đúng từ khoá và đúng file, file dẫn chiếu nhau · mình khác: tra mọi file `.md` của lab cùng lúc, bỏ dấu, trả về đúng mục.
 
