@@ -46,14 +46,17 @@ flowchart TD
     Q[Học viên hỏi] --> L["① Nhận diện lab<br/>regex Day/Lab/Ngày + số"]
     L -->|"Day04/07/08/10/11"| S1["② search_guides(câu hỏi, lab=số)<br/>chỉ repo lab đó · BM25"]
     L -->|"không thấy lab / lab khác"| S0["② search_guides(câu hỏi)<br/>tra cả 5 repo"]
-    S1 --> M["③ call_model(SYSTEM, căn cứ + câu hỏi)<br/>dòng đầu: QUYẾT ĐỊNH: answer / ask_back / not_found / refuse"]
-    S0 --> M
-    M --> V{"④ verify_citations<br/>(code)"}
-    V -->|"trích dẫn có thật, quyết định khác not_found"| OUT[Trả lời học viên]
-    V -->|"not_found · trích dẫn bịa · answer không trích dẫn · refuse có code · thiếu QUYẾT ĐỊNH"| R["⑤ Tra lại 1 lần<br/>search_guides(câu hỏi + từ khoá nộp / checkpoint / rubric)<br/>+ call_model lần 2"]
-    R --> V2{"verify_citations"}
-    V2 -->|"ổn / not_found thật"| OUT
-    V2 -->|"vẫn bịa / answer không trích dẫn"| B["Chặn: hạ về not_found (hoặc giữ refuse)<br/>+ hỏi lab coach · ghi note chặn vào trace"]
+    S1 --> X["② bổ sung (code)<br/>hỏi sản phẩm cuối / deliverable → tra thêm danh sách bài nộp<br/>hỏi CP N → tra riêng CP N"]
+    S0 --> X
+    X -->|"có căn cứ"| M["③ call_model(SYSTEM, căn cứ + câu hỏi)<br/>dòng đầu: QUYẾT ĐỊNH: answer / ask_back / not_found / refuse"]
+    X -->|"không mục nào khớp · không mục nào ghi CP N"| E["Không có căn cứ: gọi model 1 lần, không tra lại<br/>chỉ giữ refuse hoặc ask_back qua kiểm<br/>còn lại code hỏi lại (CP N) hoặc not_found"]
+    E --> OUT[Trả lời học viên]
+    M --> V{"④ code kiểm<br/>verify_citations + find_problem"}
+    V -->|"qua"| OUT
+    V -->|"not_found hoặc không qua"| R["⑤ Tra lại 1 lần<br/>search_guides(câu hỏi + từ khoá nộp / checkpoint / rubric)<br/>+ call_model lần 2"]
+    R --> V2{"kiểm lại"}
+    V2 -->|"qua"| OUT
+    V2 -->|"không qua · vẫn not_found"| B["Câu cố định: not_found,<br/>hoặc refuse kèm mục liên quan nhất<br/>ghi note vào trace"]
     B --> OUT
     OUT -.->|"gia hạn · ngoại lệ · điểm · tài liệu mâu thuẫn"| H((Lab coach))
 ```
@@ -67,19 +70,20 @@ flowchart TD
   | `verify_citations` | `text` (câu trả lời của model) | `{"ok", "invalid": [...], "count"}` — mọi `[… .md#…]` (và `[… .md]` không có mục) phải trùng một mã mục có thật, không phân biệt hoa thường, bỏ `**` và `` ` ``; sai → `invalid` | Không — chỉ đọc `data/labs/` |
 
   Dữ liệu: 67 file `.md` → 453 mục (`data/DATA_CARD.md`), tải và ghim commit bằng `python codebase/fetch_labs.py`. Code công cụ: Duyên; luồng `agent.py`: Linh + Duyên.
-- **Mức tự động:** [ ] AI gợi ý, người quyết · [x] AI tự làm khi chắc, chuyển người khi không · [ ] AI tự làm — AI chỉ **trả lời thông tin**, không hành động thay ai. Sai thì học viên nộp sai, mất điểm (14/22 từng nộp thiếu / sai — `evidence/survey/phan-tich-lan1.md`); nhưng mọi ý có trích dẫn `file#mục` mở được nên học viên tự kiểm, sửa rẻ. Không chắc (không thấy lab, không có căn cứ, trích dẫn không qua kiểm) → hỏi lại hoặc chuyển lab coach.
-- **Chỗ chặn rủi ro:** rủi ro lớn nhất = **bịa yêu cầu nộp** (hạn, tên file, tên repo). Chặn bằng: (1) SYSTEM cấm nêu con số / tên không có trong căn cứ; (2) `verify_citations` (code) kiểm mọi trích dẫn; (3) trích dẫn bịa hoặc `answer` không trích dẫn → tra lại 1 lần, vẫn hỏng → code thay câu trả lời bằng `not_found` + "hỏi lab coach", ghi `note("chặn: …")` vào trace. Rủi ro thứ hai = **làm hộ bài / bị chèn lệnh**: SYSTEM coi câu hỏi và tài liệu là dữ liệu, có nhánh `refuse` (câu thử T13, T14, T15).
+- **Mức tự động:** [ ] AI gợi ý, người quyết · [x] AI tự làm khi chắc, chuyển người khi không · [ ] AI tự làm — AI chỉ **trả lời thông tin**, không hành động thay ai. Sai thì học viên nộp sai, mất điểm (14/22 từng nộp thiếu / sai — `evidence/survey/phan-tich-lan1.md`); nhưng câu trả lời có trích dẫn `file#mục` mở được nên học viên tự kiểm, sửa rẻ. Không chắc (không thấy lab, không có căn cứ, trích dẫn không qua kiểm) → hỏi lại hoặc chuyển lab coach.
+- **Chỗ chặn rủi ro:** rủi ro lớn nhất = **bịa yêu cầu nộp** (hạn, tên file, tên repo). Chặn bằng: (1) SYSTEM cấm nêu con số / tên không có trong căn cứ; (2) code kiểm: trích dẫn có thật (`verify_citations`) **và** nằm trong căn cứ đã đưa, `answer` phải có trích dẫn, tên file / giờ / ngày / % / khối code phải có trong căn cứ; (3) không qua → tra lại 1 lần, vẫn hỏng → code thay bằng câu cố định (`not_found` + "hỏi lab coach", hoặc `refuse`), ghi `note("chặn: …")` vào trace; `not_found` luôn dùng câu cố định; (4) hỏi mốc CP không mục nào ghi (vd "CP2" ở Day07) → không trả lời, chỉ hỏi lại hoặc từ chối. **Giới hạn:** code không kiểm được ý bịa chỉ bằng lời đi kèm trích dẫn thật — đo bằng câu thử. Rủi ro thứ hai = **làm hộ bài / bị chèn lệnh**: SYSTEM coi câu hỏi và tài liệu là dữ liệu, có nhánh `refuse` (câu thử T13, T14, T15).
 - **Chỗ người duyệt:** lab coach quyết gia hạn, ngoại lệ ("coach cho phép sửa grading.py" phải là thông báo chính thức), điểm số, và chỗ tài liệu mâu thuẫn (vd Day11 quy ước K5 nhưng ví dụ ghi K4 — T08). AI không có công cụ nào gửi tin hay sửa dữ liệu.
 - **Nguyên tắc thiết kế:**
 
   | Nguyên tắc | Chỗ cụ thể trên sơ đồ / trong bản chạy thử |
   |---|---|
   | G10 — thu hẹp phạm vi khi không chắc | ① không thấy lab → model `ask_back` (T07) · ⑤ vẫn không có căn cứ → `not_found` + lab coach (T11), không đoán |
-  | Mỗi khẳng định có nguồn kiểm được *(mã G: nhóm ghép theo 02-guide)* | ③ luật trích dẫn `[repo/file.md#heading]` · ④ `verify_citations` bằng code |
-  | Code giữ rào chắn, không giao cho model *(mã G: nhóm ghép)* | ⑤ quyết định tra lại và hạ về câu an toàn nằm trong `agent.py`, model không tự chọn |
-  | Người giữ quyết định đắt *(mã G: nhóm ghép)* | Nhánh nét đứt tới lab coach: gia hạn, ngoại lệ, điểm, mâu thuẫn |
+  | G11 — nói rõ vì sao hệ thống trả lời như vậy | `answer` kèm trích dẫn `[repo/file.md#mục]` để học viên mở đúng mục (T01); ④ chặn trích dẫn bịa hoặc ngoài căn cứ |
+  | G1 — nói rõ hệ thống làm được gì | Câu `not_found` nói chỉ dựa trên tài liệu lab; câu hỏi lại về CP nêu đúng lab đã tra (`SAFE_NOT_FOUND`, `ask_checkpoint` trong `agent.py`). Chưa có lời giới thiệu phạm vi khi mở bản chạy thử |
+  | Code giữ rào chắn, không giao cho model *(không phải mã HAX)* | ⑤ quyết định tra lại và hạ về câu an toàn nằm trong `agent.py`, model không tự chọn |
+  | Người giữ quyết định đắt *(không phải mã HAX)* | Nhánh nét đứt tới lab coach: gia hạn, ngoại lệ, điểm, mâu thuẫn |
 
-- **Phần nào còn giả:** model đang ở **chế độ giả** (`codebase/ai.py`, `MODEL_PROVIDER=fake`) — output là câu giả cố định, không có dòng `QUYẾT ĐỊNH:` nên nhánh ⑤ chưa chạy trong `run.py`; nhánh tra lại / chặn đã thử bằng model giả lập ngoài repo. Tra cứu là BM25 trên từ khoá (chưa có embedding). Dữ liệu lab là **thật** (clone ngày 27/11/2026). Nối model thật ở CP3.
+- **Phần nào còn giả:** model đang ở **chế độ giả** (`codebase/ai.py`, `MODEL_PROVIDER=fake`) — output là câu giả cố định, không có dòng `QUYẾT ĐỊNH:` nên nhánh ⑤ chưa chạy trong `run.py` (ở chế độ giả code kiểm nhưng không chặn; riêng câu không có căn cứ, vd "Day07 CP2", code tự trả câu hỏi lại / `not_found`); nhánh tra lại / chặn đã thử bằng model giả lập ngoài repo. Tra cứu là BM25 trên từ khoá (chưa có embedding). Dữ liệu lab là **thật** (clone ngày 27/11/2026). Nối model thật ở CP3.
 - **Thiếu dữ liệu:** chưa tải `data/labs/` thì công cụ báo lỗi kèm lệnh `python codebase/fetch_labs.py` (`python run.py` in lỗi rồi cho hỏi tiếp). Cố ý không trả danh sách rỗng, để trợ lý không nói "không có trong tài liệu" chỉ vì thiếu dữ liệu.
 
 ## §5. Chỗ khó — 4 lớp + ≥6 kịch bản + 2 tấn công *(guide 2.3)*
