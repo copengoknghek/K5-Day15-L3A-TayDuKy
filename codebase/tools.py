@@ -3,7 +3,8 @@
 Nguồn: 5 repo lab trong data/labs/ (tải bằng `python codebase/fetch_labs.py`, mô tả ở data/DATA_CARD.md).
 Mã mục (cũng là mã trích dẫn): <repo>/<file>.md#<heading>, viết trong ngoặc vuông ở câu trả lời.
 Phần chữ trước heading đầu tiên của file có mã <repo>/<file>.md#(mở đầu).
-Các heading trùng tên trong cùng một file được gộp thành một mục, để một mã chỉ trỏ tới một chỗ.
+Heading trùng tên trong cùng một file được gắn mục cha cho khác nhau: …#<mục cha> > <heading>.
+Heading cấp 2 trở xuống không có chữ riêng thì lấy nội dung các mục con của nó.
 """
 import collections
 import functools
@@ -34,7 +35,9 @@ def _normalize(text):
 
 
 def _words(text):
-    return re.findall(r"[a-z0-9]+", _normalize(text))
+    # "checkpoint 2", "Check point 02", "CP 2", "CP2" đều thành một từ "cp2": mỗi lab viết một kiểu
+    text = re.sub(r"\b(?:check[ -]?point|cp)[ #]*0*(\d+)\b", r" cp\1 ", _normalize(text))
+    return re.findall(r"[a-z0-9]+", text)
 
 
 def _key(code):
@@ -49,6 +52,39 @@ def _lab_number(lab):
     return int(digits.group()) if digits else None
 
 
+def _with_parents(sections):
+    """[(heading, nội dung, cấp)] → [(heading, nội dung, cấp, [heading các mục cha, gần nhất ở cuối])].
+    Heading cấp 1 là tên cả file nên không tính là mục cha."""
+    stack, result = [], []
+    for heading, body, level in sections:
+        while stack and stack[-1][0] >= level:
+            stack.pop()
+        result.append((heading, body, level, [name for _, name in stack]))
+        if level >= 2:
+            stack.append((level, heading))
+    return result
+
+
+def _file_sections(text):
+    """Các mục của một file: [(tên mục dùng trong mã, nội dung, [mục cha])]."""
+    sections = _with_parents(split_sections(text))
+    seen = collections.Counter(heading for heading, _, _, _ in sections)
+    result = []
+    for i, (heading, body, level, parents) in enumerate(sections):
+        if not body and level >= 2:  # chỉ có mục con: gom chữ của chúng lại
+            children = []
+            for child, child_body, child_level, _ in sections[i + 1:]:
+                if child_level <= level:
+                    break
+                children.append("%s %s\n%s" % ("#" * child_level, child, child_body))
+            body = "\n".join(children).strip()
+        name = heading or NO_HEADING
+        if seen[heading] > 1 and parents:
+            name = "%s > %s" % (parents[-1], name)
+        result.append((name, body, parents))
+    return result
+
+
 @functools.lru_cache(maxsize=None)
 def _index():
     """Đọc 5 repo một lần: {mã mục: thông tin mục}."""
@@ -60,11 +96,12 @@ def _index():
     for lab, repo, _ in LABS:
         for path in markdown_files(os.path.join(LABS_DIR, repo)):
             with open(os.path.join(LABS_DIR, repo, path), encoding="utf-8-sig", errors="replace") as f:
-                sections = split_sections(f.read())
-            for heading, body in sections:
-                code = "%s/%s#%s" % (repo, path, heading or NO_HEADING)
-                entry = index.setdefault(_key(code), {"code": code, "lab": _lab_number(lab),
-                                                     "title": "%s %s" % (path, heading), "body": ""})
+                sections = _file_sections(f.read())
+            for name, body, parents in sections:
+                code = "%s/%s#%s" % (repo, path, name)
+                # còn trùng cả mục cha thì gộp, để một mã chỉ trỏ tới một chỗ
+                entry = index.setdefault(_key(code), {"code": code, "lab": _lab_number(lab), "parents": parents,
+                                                     "title": " ".join([path, name] + parents), "body": ""})
                 entry["body"] = (entry["body"] + "\n" + body).strip()
     for entry in index.values():
         words = collections.Counter(_words(entry["body"]))
@@ -114,6 +151,8 @@ def search_guides(query: str, lab=None, k: int = 5) -> list:
         text = entry["body"]
         if len(text) > MAX_CHARS:
             text = text[:MAX_CHARS] + "\n…(cắt bớt)"
+        if entry["parents"]:  # cho model biết mục này nằm trong mục nào (vd checkpoint mấy)
+            text = "Thuộc: %s\n%s" % (" > ".join(entry["parents"]), text)
         results.append({"code": code, "text": text})
     return results
 

@@ -37,13 +37,14 @@ FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,})(.*)$")
 
 
 def split_sections(text):
-    """Cắt một file Markdown thành [(heading, nội dung)]. Mục trước heading đầu tiên có heading ""."""
-    sections, heading, body, fence = [], "", [], None
+    """Cắt một file Markdown thành [(heading, nội dung, cấp)]; cấp 1–6 theo số dấu #.
+    Mục trước heading đầu tiên có heading "" và cấp 0."""
+    sections, heading, level, body, fence = [], "", 0, [], None
 
     def close():
         content = "\n".join(body).strip()
         if heading or content:
-            sections.append((heading, content))
+            sections.append((heading, content, level))
 
     for line in text.splitlines():
         mark = FENCE.match(line)
@@ -57,7 +58,7 @@ def split_sections(text):
             found = HEADING.match(line)
             if found:
                 close()
-                heading, body = found.group(2).strip(), []
+                heading, level, body = found.group(2).strip(), len(found.group(1)), []
                 continue
         body.append(line)
     close()
