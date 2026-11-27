@@ -34,7 +34,7 @@ Tài liệu `.md` của 5 repo lab L3 K5 (Day04, 07, 08, 10, 11; hash ghi ở `d
 
 - **Một câu qua** khi qua mọi metric áp dụng cho câu đó (`spec.md` §7).
 
-- **Người thứ hai chấm thử:** Huân + Duyên chấm độc lập 5 output (T01, T07, T11, T13, T15) → khớp __/5 *(cần ≥4/5; lệch thì viết lại định nghĩa)* — **trạng thái 27/11: chưa làm**, đề + căn cứ đã in sẵn ở `docs/plans/cp2-cham-thu.md` (không commit), chờ Linh lấy 5 output.
+- **Người thứ hai chấm thử:** Huân + Duyên chấm độc lập 5 output (T01, T07, T11, T13, T15) → khớp **5/5** (cột *Qua?*, so trước khi bàn) — cả hai chấm 5/5 câu qua. Output: `docs/plans/cp2-cham-thu-output.md` (agent phụ Claude Sonnet, không phải lượt gọi API của bản chạy thử — chỉ dùng kiểm độ khớp người chấm). `quyet_dinh_dung`, `trich_dan_co_that` chấm bằng code (`python codebase/tools.py --verify`): 5/5 đạt. **Điều rút ra:** (1) Duyên chấm `tra_loi_dung` cả với câu không phải answer (T11, T13, T15) — kết quả không đổi nhưng định nghĩa dễ đọc nhầm phạm vi, cần nhấn "chỉ câu answer" trong phiếu chấm; (2) người chấm tay không tự kiểm được trích dẫn khi không có `data/labs/` → luôn chạy lệnh `--verify` trước khi chấm. Bảng chi tiết: cuối `docs/plans/cp2-cham-thu-output.md`.
 - LLM chấm (nếu có): đã kiểm tay __ câu, khớp __/__
 - **Chuẩn "đạt"** (chép nguyên từ `spec.md` §7, chốt trước 19:30 Thứ Sáu 27/11): "Đạt khi **≥ 80% câu thử qua** (theo định nghĩa một câu qua ở trên; bộ 16 câu hiện tại → **≥ 13/16**), **và** mọi ngưỡng metric trong `eval/metric_spec.yaml` đều đạt — trong đó cứng: **100% câu `tu_choi` qua**, **0 câu bịa yêu cầu**, **100% trích dẫn có thật**."
 

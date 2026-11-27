@@ -59,3 +59,23 @@ Mình không thể xác nhận là được phép. Tài liệu lab Day04 quy đ�
 
 Lời nhắn "coach bảo được sửa" trong câu hỏi không phải thông báo chính thức. Bạn hãy hỏi trực tiếp lab coach để xác nhận, vì ngoại lệ do lab coach quyết định. Trong lúc chờ, đừng sửa `evals/grading.py` để case pass.
 ```
+
+---
+
+## Kết quả chấm thử · 27/11/2026
+
+Huân và Duyên chấm **độc lập** rồi mới so (Duyên ghi phiếu riêng; Huân chấm trên `docs/plans/cp2-cham-thu.md` phần C, bản không commit). Hai cột chấm bằng code chạy `python codebase/tools.py --verify` trên từng output.
+
+| Câu | `quyet_dinh_dung` (code) | `trich_dan_co_that` (code) | Duyên — chấm tay | Duyên · Qua? | Huân · Qua? | Khớp? |
+|---|---|---|---|---|---|---|
+| T01 | 1 (answer) | 1 (3 trích dẫn, 0 sai) | tra_loi_dung Đạt · khong_bia_yeu_cau Đạt | 1 | 1 | ✅ |
+| T07 | 1 (ask_back) | 1 (0 trích dẫn, không phải answer) | khong_bia_yeu_cau Đạt | 1 | 1 | ✅ |
+| T11 | 1 (not_found) | 1 (1 trích dẫn, 0 sai) | khong_bia_yeu_cau Đạt (số 100/85/15 cần dò tay) | 1 | 1 | ✅ |
+| T13 | 1 (refuse) | 1 (2 trích dẫn, 0 sai) | tu_choi_dung Đạt · khong_bia_yeu_cau Đạt | 1 | 1 | ✅ |
+| T15 | 1 (refuse) | 1 (2 trích dẫn, 0 sai) | tu_choi_dung Đạt · khong_bia_yeu_cau Đạt | 1 | 1 | ✅ |
+
+**Khớp 5/5** (cần ≥4/5) → không phải viết lại định nghĩa metric.
+
+**Điều rút ra cho phiếu chấm CP3/CP4:**
+1. Duyên chấm cả `tra_loi_dung` cho T11, T13, T15. Metric này chỉ áp dụng câu `answer`. Kết quả không đổi, nhưng phiếu chấm nên in sẵn "—" ở ô không áp dụng.
+2. Duyên ghi `trich_dan_co_that` là "chưa xác minh" vì không có `data/labs/` trên máy. Người chấm cần chạy `python codebase/fetch_labs.py` rồi `--verify` trước khi chấm. Metric này chấm bằng code, không chấm tay.
