@@ -10,6 +10,7 @@
 ② bổ sung: hỏi "sản phẩm cuối", "deliverable"… → tra thêm mục danh sách bài nộp; hỏi "CP N" → tra riêng CP N.
 Không có căn cứ (không mục nào khớp, hoặc không mục nào ghi CP N): không bao giờ answer, không tra lại;
 giữ refuse / ask_back của model nếu qua kiểm, còn lại code hỏi lại (có CP N) hoặc trả not_found.
+Hỏi "giai đoạn N" mà không nói CP: không đưa căn cứ; giữ refuse, còn lại code hỏi lại "có phải CP N không".
 
 Kiểm bằng code: dòng QUYẾT ĐỊNH · trích dẫn có thật VÀ nằm trong căn cứ đã đưa · answer phải có trích dẫn ·
 khối code, tên file, giờ, ngày, % phải có trong căn cứ · không chép SYSTEM. not_found luôn dùng câu cố định.
@@ -54,6 +55,8 @@ Luật bắt buộc:
 LAB_RE = re.compile(r"\b(day|lab|ngay)\s*0*(\d{1,2})\b")
 # Các cách dưới đây so trên câu đã bỏ dấu; mốc viết như tools.py gộp: "CP2", "CP 02", "checkpoint 2".
 CHECKPOINT_RE = re.compile(r"\b(?:check[ \-]?point|cp)[ #]*0*(\d+)\b")
+# "giai đoạn N": tài liệu không nói đây là CP N → code hỏi lại, không tự đoán.
+STAGE_RE = re.compile(r"\bgiai doan[ #]*0*(\d+)\b")
 FINAL_RE = re.compile(r"\b(?:san pham cuoi|cuoi buoi|cuoi bai|bai nop|deliverables?|final (?:product|submission|output))\b")
 CODE_RE = re.compile(r"```|~~~|^\s*(?:async\s+)?(?:def|class)\s+\w+", re.MULTILINE)
 FENCE_RE = re.compile(r"(```|~~~)(.*?)(?:\1|\Z)", re.DOTALL)
@@ -198,6 +201,15 @@ def ask_checkpoint(lab, checkpoints: list) -> str:
             % (names, where, example))
 
 
+def ask_stage(lab, stages: list) -> str:
+    """Câu hỏi lại do code viết, khi hỏi "giai đoạn N" mà không nói CP nào."""
+    names = ", ".join("CP%d" % n for n in stages)
+    day = "Day%02d" % lab if lab else "Day mấy"
+    return ("QUYẾT ĐỊNH: ask_back\n"
+            "\"Giai đoạn %s\" bạn hỏi có phải là %s không? Nếu đúng, hãy hỏi lại đủ lab và mốc: \"%s %s cần làm gì\"."
+            % (", ".join(map(str, stages)), names, day, names))
+
+
 def _ask(text, lab_num, found, retry_reason=""):
     reply = call_model(SYSTEM, build_user(text, lab_num, found, retry_reason=retry_reason))
     decision, body = split_decision(reply["text"])
@@ -222,14 +234,20 @@ def answer(text: str) -> dict:
         exact = search_guides(" ".join("CP%d" % n for n in checkpoints), lab=lab, k=K)
         missing = not exact
         found = [] if missing else merge(exact, found)  # mục khớp từ khác không phải căn cứ cho mốc được hỏi
+    stages = [] if checkpoints else sorted({int(n) for n in STAGE_RE.findall(plain)})
+    if stages:
+        found = []  # chưa biết là mốc nào thì chưa có căn cứ
 
     # ③ model viết trả lời  ④ code kiểm
     reply, decision, body, problem = _ask(text, lab_num, found)
 
     if not found:  # không có căn cứ: chỉ được từ chối, hỏi lại hoặc not_found
-        note("không có căn cứ: %s" % ("không mục nào ghi mốc được hỏi" if missing else "không mục nào khớp"))
+        note("không có căn cứ: %s" % ("hỏi \"giai đoạn N\", chưa rõ mốc" if stages else
+                                      "không mục nào ghi mốc được hỏi" if missing else "không mục nào khớp"))
         if decision == "refuse":
             return {"output": SAFE_REFUSE if problem else "QUYẾT ĐỊNH: refuse\n" + body}
+        if stages:  # luôn dùng câu hỏi lại của code, không để model tự suy ra mốc
+            return {"output": ask_stage(lab, stages)}
         if decision == "ask_back" and not problem:
             return {"output": "QUYẾT ĐỊNH: ask_back\n" + body}
         return {"output": ask_checkpoint(lab, checkpoints) if missing else SAFE_NOT_FOUND}
