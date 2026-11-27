@@ -38,3 +38,6 @@ data-btc/
 
 # Bản sao repo lab của khoá để chạy thử: không commit nguyên tài liệu khoá
 data/labs/
+
+# Bản in sẵn chấm thử: có trích đoạn nguyên văn tài liệu lab
+docs/plans/cp2-cham-thu.md

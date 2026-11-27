@@ -6,13 +6,13 @@ README của nhóm có mục "Dùng AI vào việc gì" (2–3 dòng, bắt bu�
 
 | Việc | Công cụ AI | AI làm gì | Người kiểm/sửa gì | Ai phụ trách |
 |---|---|---|---|---|
-| Code bản chạy thử | | | | |
-| Prompt / thiết kế lời gọi mô hình | | | | |
+| Code bản chạy thử | Claude Code (Sonnet) | Viết nháp `agent.py` (workflow A+) trên công cụ `codebase/tools.py`, `fetch_labs.py` do Duyên viết (có dùng Claude, xem commit); subagent Claude (Sonnet) review `agent.py` 2 lần — lần 1 sửa 3 lỗi thật (output thiếu dòng QUYẾT ĐỊNH lọt qua, regex "ngày" nhận nhầm lab, refuse có code), lần 2 không có lỗi thật, sửa 3 góp ý (nhận "ngày 7", lab ngoài 5 repo không tra lại, tra lại không thêm mục thì giữ not_found) | *(chờ làm)* Duyên đọc + chạy thử công cụ (1 trích dẫn đúng, 1 bịa); Linh chạy `python run.py` T01, T07, T14 | Duyên, Linh |
+| Prompt / thiết kế lời gọi mô hình | Claude Code (Sonnet) | Viết nháp SYSTEM (vai trò, 4 nhánh, luật trích dẫn, không lời giải, không điểm, câu hỏi là dữ liệu) | *(chờ làm)* Linh duyệt bản SYSTEM | Linh |
 | Đào data (viết script đếm, gợi ý nhãn) | | | Kiểm tay __ dòng, khớp __ | |
 | Rà câu hỏi phỏng vấn / khảo sát | | Chỉ rà câu dẫn dắt | | |
-| Viết câu thử (benchmark) | | | Mỗi câu thử có `source`; câu thử AI viết được ghi rõ | |
+| Viết câu thử (benchmark) | Claude Code | In sẵn mục nguồn tra được cho 16 câu để đối chiếu (`docs/plans/cp2-cham-thu.md`); không tự chấm, không sửa expected | Mỗi câu thử có `source`; *(chờ làm)* Duyên đối chiếu đáp án với `data/labs/` | Huân, Duyên |
 | Sinh data `synthetic` (nếu có) | | | Seed __ · kiểm tay __ dòng | |
 | Chấm cột `pass` bằng LLM (nếu có) | | | Kiểm tra thủ công __ câu thử, khớp __/__ | |
-| Slide, văn bản | | | | |
+| Slide, văn bản | Claude Code (Sonnet) | Nháp `spec.md` (§1, §3–§7, §10), `data/DATA_CARD.md`, `eval/README.md` 1–4, canvas, `evidence/summary.md` **từ số nhóm đưa** (khảo sát đọc từ Google Form) | *(chờ làm)* Huyền duyệt spec / canvas / summary; Huân duyệt DATA_CARD, eval/README | Huyền, Huân |
 
 **Không dùng AI để:** tạo người được phỏng vấn, trích dẫn, câu trả lời khảo sát; sửa kết quả các lượt đã chạy (`eval/run-*.csv`, `cost/simulate-*.csv`, `traces/`).

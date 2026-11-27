@@ -87,14 +87,16 @@ Nhóm dùng stack khác (Node, Streamlit, notebook…): sửa hàm `run_app()` t
 
 | Thành phần | Thật / Giả | Ghi chú |
 |---|---|---|
-| Lời gọi AI ở quyết định trung tâm | **Thật** (bắt buộc từ CP3) | Model: ____ |
-|  |  |  |
+| Lời gọi AI ở quyết định trung tâm | **Giả ở CP2** (thật bắt buộc từ CP3) | `codebase/ai.py` chế độ `fake`: trả câu giả cố định, token 0. Model: ____ (chọn khi nối ở CP3) |
+| Dữ liệu tra cứu | **Thật** | 5 repo lab L3 K5 công khai, 67 file `.md`, 453 mục, clone 27/11/2026 (`data/DATA_CARD.md`) — không commit |
+| `search_guides` (tra mục) | **Thật** | BM25 trên từ khoá bỏ dấu, dữ liệu thật; chưa có embedding |
+| `verify_citations` (kiểm trích dẫn) | **Thật** | So từng `[repo/file.md#heading]` với mục có thật |
+| Bước tra lại + chặn (A+) | **Thật trong code, chưa chạy với model** | Model giả không có dòng `QUYẾT ĐỊNH:` nên không kích hoạt; đã thử bằng model giả lập ngoài repo |
+| Bộ câu thử | Thật, tự viết | 16 câu `tu_viet`, chưa có câu từ người dùng |
 
 ## Dùng AI vào việc gì
 
-2–3 dòng (bắt buộc): nhóm dùng công cụ AI nào để làm gì, người kiểm lại phần nào. Chi tiết: [docs/ai-usage.md](docs/ai-usage.md). Coding agent đọc [AGENTS.md](AGENTS.md).
-
-____
+Nhóm dùng Claude Code (Sonnet) viết nháp code `codebase/` (tải tài liệu lab, tra cứu, kiểm trích dẫn, luồng A+) và nháp tài liệu CP2 từ số nhóm đưa; một subagent Claude review code trước khi nhận. Người có tên ở từng phần đọc lại, chạy thử và sửa; số khảo sát, trích dẫn, đáp án câu thử do người đọc từ nguồn, không do AI tạo. Chi tiết: [docs/ai-usage.md](docs/ai-usage.md). Coding agent đọc [AGENTS.md](AGENTS.md).
 
 ## File mẫu — điền ở bước nào
 
