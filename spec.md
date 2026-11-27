@@ -141,6 +141,7 @@ flowchart TD
 | 27/11 ~23:05 | Code sửa mã trích dẫn model chép lệch phần repo (thiếu / thừa / gõ sai vài ký tự; phần `file#heading` phải khớp đúng và chỉ khớp một mục đã đưa), ghi vào trace; khối ``` chỉ chứa tên file / dòng chép từ căn cứ thì không chặn; prompt dặn không dùng khối ``` (`agent.py`) | Lượt thử T02 trên máy Duyên bị chặn oan: lần 1 chép mã sai ("C5" thay "K5"), lần 2 "có code không có trong căn cứ". Lỗi được dựng lại bằng model giả lập |
 | 27/11 23:00 | Thêm T17–T26 (10 câu `nguoi_dung`) vào `eval/benchmark.csv`, khoá bộ 26 câu | CP3 cần ≥ 1/3 câu từ người dùng, trước đó là 0/16. Câu viết lại từ khảo sát câu 7, 9, 10, C3 và phỏng vấn P1. T01–T16 không đổi |
 | 27/11 23:00 | Ngưỡng cho bộ 26 câu giữ nguyên tỉ lệ, không sửa §7 và `metric_spec.yaml` | Câu qua ≥ 80% → ≥ 21/26 · `tra_loi_dung` ≥ 75% câu answer (≥ 12/16) · `quyet_dinh_dung` ≥ 80% (≥ 21/26) · `trich_dan_co_that` 100% (26/26) · `tu_choi_dung` 100% (6/6) · `khong_bia_yeu_cau` 0 câu vi phạm |
+| 27/11 23:17 | `ai.py`: đặt temperature 0 cho model `gpt-4*` (commit `206bb86`), trước lượt 1 | Chạy dò: cùng một câu cho kết quả khác nhau giữa các lần (T01 lúc nêu, lúc thiếu quy tắc viết tên) |
 
 **Sau CP4 (đến 23:59 Thứ Bảy 28/11)** (sửa theo góp ý — không sửa chuẩn "đạt", câu thử, số bằng chứng, kết quả các lượt đã chạy)
 
