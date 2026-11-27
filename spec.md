@@ -141,6 +141,8 @@ flowchart TD
 | 27/11 | Hỏi "giai đoạn N" mà không nói CP → code hỏi lại "có phải CP N không" (`agent.py`, §4) | Thử `search_guides` trên 5 lab: "giai đoạn 3 cần làm gì" không ra mục CP3 trong 5 kết quả đầu |
 | 27/11 ~23:00 | Nối model thật (`ai.py`, OpenAI `gpt-4o-mini`). Prompt: không nêu lab mà đáp án tuỳ lab → `ask_back`; trích dẫn đặt cuối ý, không chép link Markdown; liệt kê đủ mục phải nộp. Câu hỏi "nộp gì" (không nhắc CP) tra thêm danh sách bài nộp (`agent.py`) | Chạy dò với model thật trước lượt 1, **có dùng một số câu trong bộ thử** (không chép câu thử vào code): T07 ra `not_found` thay vì hỏi lại; "Day11 cần nộp những gì" trả lời thiếu mục |
 | 27/11 ~23:05 | Code sửa mã trích dẫn model chép lệch phần repo (thiếu / thừa / gõ sai vài ký tự; phần `file#heading` phải khớp đúng và chỉ khớp một mục đã đưa), ghi vào trace; khối ``` chỉ chứa tên file / dòng chép từ căn cứ thì không chặn; prompt dặn không dùng khối ``` (`agent.py`) | Lượt thử T02 trên máy Duyên bị chặn oan: lần 1 chép mã sai ("C5" thay "K5"), lần 2 "có code không có trong căn cứ". Lỗi được dựng lại bằng model giả lập |
+| 27/11 23:00 | Thêm T17–T26 (10 câu `nguoi_dung`) vào `eval/benchmark.csv`, khoá bộ 26 câu | CP3 cần ≥ 1/3 câu từ người dùng, trước đó là 0/16. Câu viết lại từ khảo sát câu 7, 9, 10, C3 và phỏng vấn P1. T01–T16 không đổi |
+| 27/11 23:00 | Ngưỡng cho bộ 26 câu giữ nguyên tỉ lệ, không sửa §7 và `metric_spec.yaml` | Câu qua ≥ 80% → ≥ 21/26 · `tra_loi_dung` ≥ 75% câu answer (≥ 12/16) · `quyet_dinh_dung` ≥ 80% (≥ 21/26) · `trich_dan_co_that` 100% (26/26) · `tu_choi_dung` 100% (6/6) · `khong_bia_yeu_cau` 0 câu vi phạm |
 
 **Sau CP4 (đến 23:59 Thứ Bảy 28/11)** (sửa theo góp ý — không sửa chuẩn "đạt", câu thử, số bằng chứng, kết quả các lượt đã chạy)
 
