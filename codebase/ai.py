@@ -73,8 +73,10 @@ def _messages(system, user):
 
 
 def call_openai_style(system, user):
-    data = post_json(URL_OPENAI_STYLE[MODEL_PROVIDER], {"Authorization": "Bearer " + API_KEY},
-                     {"model": MODEL_NAME, "messages": _messages(system, user)})
+    body = {"model": MODEL_NAME, "messages": _messages(system, user)}
+    if MODEL_NAME.startswith("gpt-4"):  # bớt dao động giữa các lượt; vài model khác từ chối tham số này
+        body["temperature"] = 0
+    data = post_json(URL_OPENAI_STYLE[MODEL_PROVIDER], {"Authorization": "Bearer " + API_KEY}, body)
     u = data["usage"]
     # token ra gồm cả token suy nghĩ: có API không tính vào completion_tokens nhưng có trong total_tokens
     tokens_out = max(u.get("completion_tokens") or 0, (u.get("total_tokens") or 0) - u["prompt_tokens"])
