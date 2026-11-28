@@ -11,16 +11,19 @@
 </head>
 <body class="home">
   <aside class="sidebar">
-    <a class="brand" href="/"><span class="logo">TK</span><span>TayDuKy</span></a>
+    <a class="brand" href="/"><span class="logo">TK</span><span class="label">TayDuKy</span></a>
     <nav>
-      <a href="/" class="active" aria-current="page">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.5 12 5l8 6.5M6 10v9h12v-9M10 19v-5h4v5"/></svg>Trang chủ</a>
-      <a href="/bot">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v3M6 7h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2ZM9 12v1M15 12v1M9.5 16h5"/></svg>Hỏi bot</a>
+      <a href="/" title="Trang chủ" class="active" aria-current="page">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.5 12 5l8 6.5M6 10v9h12v-9M10 19v-5h4v5"/></svg><span class="label">Trang chủ</span></a>
+      <a href="/bot" title="Hỏi bot">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v3M6 7h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2ZM9 12v1M15 12v1M9.5 16h5"/></svg><span class="label">Hỏi bot</span></a>
     </nav>
     <p class="nav-title">Tài liệu 5 lab</p>
     <ul id="labs" class="lab-list"></ul>
     <p class="foot" id="model">Đang tải…</p>
+    <button type="button" class="collapse" id="collapse" aria-pressed="false">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="3"/><path d="M9.5 4.5v15"/></svg><span class="label">Thu gọn</span>
+    </button>
   </aside>
 
   <main>

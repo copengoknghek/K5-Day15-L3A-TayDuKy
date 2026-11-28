@@ -17,3 +17,21 @@ const stats = fetch("/api/stats").then(async (response) => {
   return data;
 });
 stats.catch((error) => { $("model").textContent = error.message || "Không tải được số liệu"; });
+
+// Thu gọn thanh bên còn icon; nhớ lựa chọn trên trình duyệt này.
+const SIDEBAR = "tayduky-sidebar";
+function setCollapsed(collapsed) {
+  document.body.classList.toggle("collapsed", collapsed);
+  const button = $("collapse");
+  button.setAttribute("aria-pressed", collapsed);
+  button.title = collapsed ? "Mở rộng thanh bên" : "Thu gọn thanh bên";
+  button.querySelector(".label").textContent = collapsed ? "Mở rộng" : "Thu gọn";
+}
+let startCollapsed = false;
+try { startCollapsed = localStorage.getItem(SIDEBAR) === "1"; } catch { /* bị chặn thì mở rộng */ }
+setCollapsed(startCollapsed);
+$("collapse").addEventListener("click", () => {
+  const collapsed = !document.body.classList.contains("collapsed");
+  setCollapsed(collapsed);
+  try { localStorage.setItem(SIDEBAR, collapsed ? "1" : "0"); } catch { /* không nhớ được thì thôi */ }
+});
