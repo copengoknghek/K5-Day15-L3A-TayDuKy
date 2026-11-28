@@ -3,49 +3,45 @@
 # Mọi số phải có nguồn (data / phỏng vấn / khảo sát / quy mô khoá có nguồn) hoặc ghi rõ "(tự ước tính)".
 # Chạy: python run.py simulate --try   (10 phiên, kiểm khung — làm trước CP3)
 #       python run.py simulate         (đủ số phiên dưới đây — bản nộp CP4)
-# Thay mọi dòng "(ví dụ)" bằng số và nguồn của nhóm; simulate nhắc nếu còn sót.
 
 sessions: 50        # số phiên mô phỏng — bản nộp ≥50
 seed: 42            # giữ cố định để chạy lại ra cùng chuỗi phiên
 
-users:              # số người dùng thật nếu đưa vào dùng — 3 kịch bản, ở quy mô thật của sản phẩm
-                    # track A: khoá học · track B–F: người dùng của sản phẩm / nhóm nhắm tới, nguồn công khai có link
+users:              # số người dùng thật nếu đưa vào dùng — 3 kịch bản, ở quy mô khoá
   low: 300
   base: 700
   high: 1000
-  source: "(ví dụ) track A — thay bằng số của nhóm. Cơ sở: lớp L3 hơn 700 học viên (README hackathon); thấp, cao: (tự ước tính)"
+  source: "base, high: 02-guide.md mục 4.2 của repo đề (lớp L3 hơn 700 học viên, cả khoá hơn 1.000) · low 300: (tự ước tính)"
 
-personas:           # ≥3 kiểu người dùng; share cộng lại = 1
+# Một phiên = một buổi lab. Số lượt hỏi / tháng lấy từ spec.md §2: ít ~18, vừa ~48, nhiều ~96 (tự ước tính theo 12 buổi lab / tháng).
+personas:
   - name: dung_it
-    share: 0.5              # tỉ lệ người dùng kiểu này
-    uses_per_month: 4       # số phiên / người / tháng
-    turns_per_session: 1    # số lượt hỏi trong một phiên
-    source: "(ví dụ) phỏng vấn P1, P3 — thay bằng nguồn của nhóm"
+    share: 0.3              # (tự ước tính)
+    uses_per_month: 9       # số phiên / người / tháng
+    turns_per_session: 2    # số lượt hỏi trong một phiên → 18 lượt / tháng
+    source: "spec.md §2: học viên hỏi 1–2 câu chốt hạn / tên repo mỗi lab, ~18 lượt / tháng; cách tách 9 phiên × 2 lượt và tỉ lệ 0,3: (tự ước tính)"
   - name: dung_vua
-    share: 0.3
-    uses_per_month: 10
-    turns_per_session: 3
-    source: "(ví dụ) khảo sát n = 24, câu 3"
+    share: 0.5              # (tự ước tính)
+    uses_per_month: 12
+    turns_per_session: 4    # → 48 lượt / tháng
+    source: "spec.md §2: ~4 câu mỗi lab cho các mốc checkpoint, ~48 lượt / tháng; 12 buổi lab × 4 lượt và tỉ lệ 0,5: (tự ước tính)"
   - name: dung_nhieu
-    share: 0.2
-    uses_per_month: 20
-    turns_per_session: 5
-    source: "(ví dụ) data/preclass: đếm số lượt / người — cách đếm ở evidence/data-mining.md"
+    share: 0.2              # (tự ước tính)
+    uses_per_month: 12
+    turns_per_session: 8    # → 96 lượt / tháng
+    source: "spec.md §2: đội trưởng / người soát bài nộp, ~8 câu mỗi lab, ~96 lượt / tháng; 12 buổi lab × 8 lượt và tỉ lệ 0,2: (tự ước tính)"
 # Mỗi lượt hỏi lấy ngẫu nhiên một đầu vào trong eval/benchmark.csv (type thuong và kho).
-# Persona hỏi kiểu riêng: thêm vào persona đó
-#     types: [thuong, kho, tu_choi]
-# hoặc
-#     inputs: ["câu hỏi kiểu 1", "câu hỏi kiểu 2"]
+# Khung gọi từng lượt độc lập: không dùng phần nhớ lab trong phiên của app.py.
 
-prices:             # USD / 1 triệu token — chép từ further-reading/model-prices.md của repo đề. ≥2 mức model
-  - model: gemini-3.1-flash-lite
-    input: 0.25
-    output: 1.50
-    source: "(ví dụ) https://ai.google.dev/gemini-api/docs/pricing · xem 25/11/2026"
-  - model: gemini-4-hydrogen
-    input: 1.50
-    output: 7.50
-    source: "(ví dụ) https://ai.google.dev/gemini-api/docs/pricing · xem 25/11/2026"
+prices:             # USD / 1 triệu token, giá standard — further-reading/model-prices.md của repo đề
+  - model: gpt-4o-mini        # model đang chạy bản chạy thử (đo token trên model này)
+    input: 0.15
+    output: 0.60
+    source: "https://developers.openai.com/api/docs/pricing · BTC tra 25/11/2026"
+  - model: gpt-5.4-mini       # chỉ tính giá trên token đo bằng gpt-4o-mini; chưa chạy bộ câu thử (giả định cùng tỉ lệ đạt — tự ước tính)
+    input: 0.75
+    output: 4.50
+    source: "https://developers.openai.com/api/docs/pricing · BTC tra 25/11/2026"
 
 usd_to_vnd:         # tuỳ chọn: điền thì bản tóm tắt in thêm tiền Việt
   rate:
