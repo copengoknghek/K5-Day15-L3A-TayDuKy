@@ -158,21 +158,32 @@
 <section class="slide">
   <div class="page">5 / 8 · Huân</div>
   <div class="tag">Đánh giá thế nào</div>
-  <h1>26 câu thử · 5 metric · chuẩn “đạt” ≥ 80%</h1>
+  <h1>Lượt 1 → Lượt 2: 13/26 (50%) → 18/26 (69%) — chưa đạt chuẩn 80%</h1>
   <div class="row">
     <div class="col">
       <ul>
         <li><b>Dataset:</b> 5 repo lab · 67 file · 453 mục</li>
         <li><b>Bộ thử 26 câu:</b> thường 9 · khó 11 · từ chối 6 · 10/26 từ người dùng</li>
-        <li><b>Chuẩn “đạt”</b> (chốt CP2): ≥21/26 câu qua + 100% từ chối + 0 bịa + 100% trích dẫn có thật</li>
-        <li><b>Lượt 1:</b> 13/26 (50%) · 6/6 từ chối · 0 bịa — <code>run-1@20261127-233523</code></li>
+        <li><b>Chuẩn “đạt”</b> (chốt CP2): ≥21/26 + 100% từ chối + 0 bịa + 100% trích dẫn có thật</li>
+        <li><b>Lượt 1</b> (<code>run-1@20261127-233523</code>): 13/26 (50%)</li>
+        <li><b>Lượt 2</b> (<code>run-5@20261128-105400</code>): <b>18/26 (69%)</b> · thường 8/9 · khó 4/11 · từ chối 6/6</li>
       </ul>
     </div>
     <div class="col">
-      <div class="todo">CHỜ SỐ LƯỢT 2 (Huân / Duyên)<br>· Lượt 2: __/26 (__%) — run ID __<br>· Nhóm lỗi “đáng lẽ answer → not_found”: 7 → __<br>· Lỗi chính còn lại: __</div>
+      <table>
+        <tr><th>Chỉ số</th><th>Lượt 1</th><th>Lượt 2</th><th>Ngưỡng</th></tr>
+        <tr><td>Tổng câu qua</td><td>13/26 (50%)</td><td><b>18/26 (69%)</b></td><td>≥21/26</td></tr>
+        <tr><td>Đúng nhánh</td><td>19/26</td><td><b>24/26 ✅</b></td><td>≥21/26</td></tr>
+        <tr><td>Từ chối · 0 bịa · Trích dẫn</td><td>6/6 · 0 · 26/26</td><td><b>6/6 · 0 · 26/26 ✅</b></td><td>100% · 0</td></tr>
+      </table>
+      <ul style="margin-top:12px;font-size:17px">
+        <li style="font-size:17px"><b>Nhóm đã nhắm</b> (<code>answer</code> → <code>not_found</code>): <b>7 → 1</b> (còn T12)</li>
+        <li style="font-size:17px"><b>Tốt lên 6 câu</b> (T05, T06, T18, T19, T21, T26) · <b>Tệ đi 1 câu</b> (T23)</li>
+        <li style="font-size:17px"><b>Lỗi còn lại:</b> 6 câu thiếu ý / lạc (T03, T08, T09, T10, T17, T22), T12, T23</li>
+      </ul>
     </div>
   </div>
-  <div class="src">Nguồn: eval/README.md · eval/report.md · eval/metric_spec.yaml · spec.md §7</div>
+  <div class="src">Nguồn: eval/README.md · eval/report.md · eval/run-1.csv · eval/run-5.csv · eval/metric_spec.yaml · spec.md §7</div>
 </section>
 
 <!-- ============ TRANG 6 ============ -->
@@ -197,7 +208,7 @@
   </table>
   <div class="big" style="grid-template-columns:repeat(3,1fr);margin-top:22px">
     <div class="stat"><b>69,6%</b><span>học viên từng nộp sai — pain thật (trang 1)</span></div>
-    <div class="stat"><b>__ / 26</b><span>lượt 2 so với chuẩn 21/26 (trang 5) · lượt 1: 13/26, 0 bịa</span></div>
+    <div class="stat"><b>18 / 26</b><span>lượt 2 (69%) &lt; 21/26 · 0 bịa · 6/6 từ chối (trang 5)</span></div>
     <div class="stat"><b>__</b><span>chi phí / task thành công (trang 6)</span></div>
   </div>
   <div class="src">Nguồn: evidence/summary.md · eval/report.md · cost/cost-estimate.md</div>
