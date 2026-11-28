@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TayDuKy · Hỏi bot</title>
+  <link rel="icon" href="data:,">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="bot">
+  <aside class="sidebar">
+    <a class="brand" href="/"><span class="logo">TK</span><span>TayDuKy</span></a>
+    <nav>
+      <a href="/">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.5 12 5l8 6.5M6 10v9h12v-9M10 19v-5h4v5"/></svg>Trang chủ</a>
+      <a href="/bot" class="active" aria-current="page">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v3M6 7h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2ZM9 12v1M15 12v1M9.5 16h5"/></svg>Hỏi bot</a>
+    </nav>
+    <p class="nav-title">Tài liệu 5 lab</p>
+    <ul id="labs" class="lab-list"></ul>
+    <p class="foot" id="model">Đang tải…</p>
+  </aside>
+
+  <main>
+    <header>
+      <h1>Hỏi bot</h1>
+      <button type="button" class="ghost" id="clear">Xoá hội thoại</button>
+    </header>
+
+    <section class="chat">
+      <div id="messages" class="messages" aria-live="polite">
+        <div class="welcome" id="welcome">
+          <span class="icon blue"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v3M6 7h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2ZM9 12v1M15 12v1M9.5 16h5"/></svg></span>
+          <h2>Bạn đang làm lab nào?</h2>
+          <p>Chọn lab bên dưới rồi hỏi về file phải nộp, hạn, cách đặt tên hoặc checkpoint.</p>
+          <div class="samples">
+            <button type="button">Lab Day04: L3A đặt tên repo thế nào?</button>
+            <button type="button">Lab Day08: học ca chiều thì hạn nộp khi nào?</button>
+            <button type="button">Bước tiếp theo là gì vậy?</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="composer">
+        <div class="picker" id="picker" role="group" aria-label="Chọn lab"></div>
+        <form id="form">
+          <label for="question" class="sr-only">Câu hỏi của bạn</label>
+          <textarea id="question" rows="1" maxlength="480" required placeholder="Hỏi về lab của bạn"></textarea>
+          <button type="submit" id="send" class="button">Gửi</button>
+        </form>
+        <p class="note">Bot chỉ nhớ lab bạn vừa nhắc, không nhớ nội dung câu trước. Câu trả lời có thể sai, hãy mở mục được trích. Đừng nhập thông tin cá nhân.</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="/common.js"></script>
+  <script src="/bot.js"></script>
+</body>
+</html>

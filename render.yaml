@@ -1,0 +1,18 @@
+# Cấu hình deploy trên Render (New → Blueprint, chọn repo này). Xem docs/deploy.md.
+services:
+  - type: web
+    name: tayduky-lab
+    runtime: python
+    plan: free
+    buildCommand: python codebase/fetch_labs.py
+    startCommand: python codebase/web.py
+    healthCheckPath: /
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: MODEL_PROVIDER
+        value: openai
+      - key: MODEL_NAME
+        value: gpt-4o-mini
+      - key: API_KEY
+        sync: false   # Render hỏi lúc tạo; không ghi key vào repo
