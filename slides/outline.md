@@ -10,7 +10,7 @@
 | 2 | Vì sao chọn bài này | Bảng impact rút gọn + hướng bị loại | `spec.md` §2 | ☑ |
 | 3 | Giải pháp | Lát cắt một câu · sơ đồ · AI tự làm đến đâu, vì sao | `spec.md` §4 | ☑ *(soát lại nếu Linh đổi §4 trước 11:45)* |
 | 4 | Demo live | 1 trường hợp thường + 1 trường hợp khó (lấy từ bộ câu thử); mạng hỏng → video dự phòng | `eval/benchmark.csv` | ☑ *(chốt câu với Duyên sau khi khoá code)* |
-| 5 | **Đánh giá thế nào** | Dataset · bộ câu thử · metric · lượt 1 → lượt 2 so với chuẩn "đạt" (kèm run ID) · lỗi chính | `eval/README.md`, `eval/report.md` | ☐ chờ lượt 2 (Huân gửi) |
+| 5 | **Đánh giá thế nào** | Dataset · bộ câu thử · metric · lượt 1 → lượt 2 so với chuẩn "đạt" (kèm run ID) · lỗi chính | `eval/README.md`, `eval/report.md` | ☑ |
 | 6 | **Chi phí khi dùng thật** | Chi phí / task thành công · 3 kịch bản · so với impact | `cost/cost-estimate.md` | ☐ chờ `simulate` (Linh) |
 | 7 | Kết luận | Go / iterate / stop — dẫn số ở trang 1, 5, 6 | — | ◐ khung xong, chờ số trang 5, 6 |
 | 8 | Nếu có thêm 1 tuần | 2–3 việc, trỏ về lỗi còn lại / phản hồi người dùng | `eval/report.md` mục 4 · `validation/log.md` | ☐ chờ Huân / Duyên |
@@ -65,13 +65,16 @@
 - Câu lạ của giám khảo: nếu không có trong tài liệu → hệ thống trả `not_found`, không đoán.
 - *Chốt lại 2 câu với Duyên sau khi khoá code 11:45 và chạy thử trên bản khoá.*
 
-### Trang 5 — Đánh giá thế nào *(nói: Huân — chờ số lượt 2)*
+### Trang 5 — Đánh giá thế nào *(nói: Huân)*
 
 - Dataset: 5 repo lab · 67 file · 453 mục (`data/DATA_CARD.md`) · bộ thử **26 câu** (thường 9 · khó 11 · từ chối 6; 10/26 từ người dùng).
-- 5 metric · chuẩn "đạt": **≥80% câu qua (≥21/26)** + 100% `tu_choi` + 0 bịa + 100% trích dẫn có thật.
-- **Lượt 1:** 13/26 (50%) — `run-1@20261127-233523` · 6/6 từ chối qua · 0 câu bịa.
-- **Lượt 2:** __/26 (__%) — run ID __
-- Lỗi chính: __ (từ `eval/report.md`)
+- 5 metric · chuẩn "đạt" (chốt CP2): **≥80% câu qua (≥21/26)** + 100% `tu_choi` + 0 bịa + 100% trích dẫn có thật.
+- **Lượt 1 → Lượt 2:**
+  - Lượt 1 (`run-1@20261127-233523`): **13/26 (50%)** · `thuong` 3/9 · `kho` 4/11 · `tu_choi` 6/6 · 0 bịa · 100% trích dẫn có thật.
+  - Lượt 2 (`run-5@20261128-105400`, 0 lỗi kỹ thuật): **18/26 (69%)** · `thuong` 8/9 · `kho` 4/11 · `tu_choi` 6/6 · 0 bịa · 100% trích dẫn có thật · **chưa đạt chuẩn ≥21/26** (`quyet_dinh_dung` 19/26 → **24/26** đạt ngưỡng).
+- **Cải tiến & lỗi chính:**
+  - Nhóm lỗi đã nhắm ("đáng lẽ `answer` → `not_found`"): **7 → 1** (còn T12); tốt lên 6 câu (T05, T06, T18, T19, T21, T26); tệ đi 1 câu (T23: `answer` thay vì `not_found`).
+  - Lỗi chính còn lại: 6 câu `answer` thiếu ý / lạc (T03, T08, T09, T10, T17, T22), T12 còn `not_found`, T23 sai nhánh. *(Lưu ý: cải tiến có chạy dò trên bộ câu thử, chưa có tập giữ riêng.)*
 
 ### Trang 6 — Chi phí khi dùng thật *(nói: Linh — chờ `simulate`)*
 
@@ -89,8 +92,8 @@
 | **Iterate** | Ngưỡng cứng giữ (an toàn) nhưng câu qua < 80% — trợ lý chưa bịa, nhưng còn hay nói "không thấy" hoặc trả lời thiếu |
 | **Stop** | Có câu bịa yêu cầu nộp / trích dẫn giả, hoặc chi phí vượt giá trị tiết kiệm được |
 
-- **Đã biết:** pain thật và lớn (trang 1: 60,9% mất ≥15', 69,6% nộp sai) · lượt 1: 0 bịa, 6/6 từ chối đúng, nhưng 13/26 (50%) < 80%.
-- **Kết luận:** __ *(điền sau khi có số trang 5, 6 — dự kiến dựa trên luật trên)*
+- **Đã biết:** pain thật và lớn (trang 1: 60,9% mất ≥15', 69,6% nộp sai) · lượt 2: **18/26 (69%)** < 80%, nhưng giữ trọn 3 ngưỡng cứng (0 bịa · 6/6 từ chối · 26/26 trích dẫn có thật).
+- **Kết luận:** __ *(chờ số chi phí trang 6 của Linh để chốt cuối — theo luật trên đang là **Iterate** nếu chi phí hợp lý)*
 
 ### Trang 8 — Nếu có thêm 1 tuần *(nói: Duyên — chờ `eval/report.md` mục 4, `validation/log.md`)*
 
