@@ -9,7 +9,7 @@ Chỉ dùng thư viện chuẩn, không cần `pip install`.
 | Hỏi bot | `/bot` | khung hội thoại, chọn lab; câu không nêu lab thì được gắn lab đã chọn |
 
 Bot chỉ nhớ số lab của câu trước (như `python run.py`), không nhớ nội dung; trình duyệt giữ số đó, mỗi người một phiên.
-Hội thoại chỉ hiện trên trình duyệt, tải lại trang là mất.
+Lịch sử trò chuyện (tối đa 20 cuộc) lưu trong `localStorage` của trình duyệt, không gửi lên máy chủ; xoá được trên trang.
 
 ## Chạy trên máy
 

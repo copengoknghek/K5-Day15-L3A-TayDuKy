@@ -40,6 +40,7 @@ STATIC = {  # chỉ phục vụ đúng các file này
     "/home.js": ("home.js", "text/javascript"),
     "/bot.js": ("bot.js", "text/javascript"),
     "/hero.png": ("hero.png", "image/png"),
+    "/bot.png": ("bot.png", "image/png"),
 }
 MAX_CHARS = 500
 PER_MINUTE = int(os.environ.get("WEB_PER_MINUTE") or 6)

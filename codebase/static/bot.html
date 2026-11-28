@@ -26,13 +26,14 @@
   <main>
     <header>
       <h1>Hỏi bot</h1>
-      <button type="button" class="ghost" id="clear">Xoá hội thoại</button>
+      <button type="button" class="ghost" id="new-chat">Cuộc trò chuyện mới</button>
     </header>
 
+    <div class="chat-layout">
     <section class="chat">
       <div id="messages" class="messages" aria-live="polite">
         <div class="welcome" id="welcome">
-          <span class="icon blue"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v3M6 7h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2ZM9 12v1M15 12v1M9.5 16h5"/></svg></span>
+          <img class="bot-face" src="/bot.png" width="606" height="606" alt="Trợ lý TayDuKy">
           <h2>Bạn đang làm lab nào?</h2>
           <p>Chọn lab bên dưới rồi hỏi về file phải nộp, hạn, cách đặt tên hoặc checkpoint.</p>
           <div class="samples">
@@ -53,6 +54,15 @@
         <p class="note">Bot chỉ nhớ lab bạn vừa nhắc, không nhớ nội dung câu trước. Câu trả lời có thể sai, hãy mở mục được trích. Đừng nhập thông tin cá nhân.</p>
       </div>
     </section>
+
+    <aside class="history" aria-label="Lịch sử trò chuyện">
+      <h3>Lịch sử</h3>
+      <p class="history-empty" id="history-empty">Chưa có cuộc trò chuyện nào.</p>
+      <ul id="history"></ul>
+      <button type="button" class="ghost" id="wipe" hidden>Xoá lịch sử</button>
+      <p class="note">Lưu trên trình duyệt này, tối đa 20 cuộc.</p>
+    </aside>
+    </div>
   </main>
 
   <script src="/common.js"></script>

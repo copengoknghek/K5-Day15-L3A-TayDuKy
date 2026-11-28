@@ -13,7 +13,6 @@ function drawEval(run) {
   $("bars-title").textContent = `Lượt ${run.run}: ${good.toLowerCase()} theo loại câu`;
   $("legend-right").textContent = good;
   $("legend-wrong").textContent = bad;
-  $("th-right").textContent = good;
 
   const types = Object.entries(run.types);
   const max = Math.max(...types.map(([, t]) => t.total));
@@ -30,8 +29,6 @@ function drawEval(run) {
     return el("div", { className: "bar" }, stack,
       el("b", { textContent: `${t[key]}/${t.total}` }), el("small", { textContent: label }));
   }));
-  $("table").replaceChildren(...types.map(([name, t]) =>
-    el("tr", {}, ...[TYPES[name] || name, t[key], t.total].map((v) => el("td", { textContent: v })))));
 
   const count = graded ? run.passed : run.right;
   const share = count / run.total;
