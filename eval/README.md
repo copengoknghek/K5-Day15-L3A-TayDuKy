@@ -52,10 +52,10 @@ Tài liệu `.md` của 5 repo lab L3 K5 (Day04, 07, 08, 10, 11; hash ghi ở `d
 | `run-2` | `run-2@20261128-104144` | `gpt-4o-mini` (temperature 0) | Code `agent.py` tại commit `4c87a12` (cải tiến, `spec.md` §10). **3 câu lỗi mạng** (T11, T16, T20) | không chấm | | |
 | `run-3` | `run-3@20261128-104354` | `gpt-4o-mini` (temperature 0) | Như `run-2`, chạy lại. **1 câu lỗi mạng** (T05) | không chấm | | |
 | `run-4` | `run-4@20261128-104620` | `gpt-4o-mini` (temperature 0) | Như `run-2`, chạy lại. **1 câu lỗi mạng** (T22) | không chấm | | |
-| `run-5` (= lượt 2) | `run-5@20261128-105400` | `gpt-4o-mini` (temperature 0) | Như `run-2`, chạy lại, **0 lỗi** — lượt chấm chính | *chờ chấm* (đúng nhánh 24/26) | | |
+| `run-5` (= lượt 2) | `run-5@20261128-105400` | `gpt-4o-mini` (temperature 0) | Như `run-2`, chạy lại, **0 lỗi** — lượt chấm chính | 18/26 | 69% | Chưa (cần ≥ 21/26) |
 
 Lượt chạy lại vì lỗi kỹ thuật, lượt sau CP4: ghi thêm dòng, không sửa dòng cũ.
 
 ## 6. Lỗi chính
 
-Lượt 1: nhóm lỗi lớn nhất là 7 câu đáng lẽ `answer` bị đẩy sang `not_found` (2 do code chặn trích dẫn sai, 4 do model, 1 cả hai); thêm 6 câu thiếu ý hoặc lạc. Đã cải tiến một lần nhắm nhóm `not_found` sai: đúng nhánh 19/26 → 24/26, T12 còn sai, T23 tệ đi; điểm đạt lượt 2 chờ chấm. Còn lại: T24 bịa quy định mà metric không bắt; `pass_criterion` hẹp hơn `expected` ở T03, T10, T18.
+Lượt 1: nhóm lỗi lớn nhất là 7 câu đáng lẽ `answer` bị đẩy sang `not_found` (2 do code chặn trích dẫn sai, 4 do model, 1 cả hai); thêm 6 câu thiếu ý hoặc lạc. Đã cải tiến một lần nhắm nhóm `not_found` sai: tổng 13/26 → 18/26 (69%, chưa đạt chuẩn ≥ 21/26), đúng nhánh 19/26 → 24/26, `tra_loi_dung` 3/16 → 9/16, T12 còn sai, T23 tệ đi. Lượt 2 còn 8 câu trượt, nhiều nhất là 6 câu đúng nhánh nhưng thiếu hoặc sai ý (T03, T08, T09, T10, T17, T22). Còn lại: T24 bịa quy định mà metric không bắt; `pass_criterion` hẹp hơn `expected` ở T03, T08, T10, T18.

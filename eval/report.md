@@ -1,7 +1,7 @@
 # Báo cáo đánh giá — lượt 1 → một cải tiến → lượt 2
 
 > Điền ở guide bước 4.1. Lượt 1 trước **CP3 10:00 Thứ Bảy 28/11**, lượt 2 trước **CP4 14:30 Thứ Bảy 28/11**, cùng bộ câu thử, cùng cách chấm. Chấm ở rubric R5.
-> Số lấy từ `python run.py score eval/run-1.csv` (và `run-2.csv`) sau khi điền cột `pass`. **Kết quả thấp ghi thật vẫn đủ điểm.**
+> Số lấy từ `python run.py score eval/run-1.csv` (và `run-5.csv`) sau khi điền cột `pass`. **Kết quả thấp ghi thật vẫn đủ điểm.**
 > Không được: sửa chuẩn "đạt", bỏ câu thử trượt, sửa `expected` cho khớp output, sửa kết quả lượt đã chạy.
 
 ## 1. Kết quả
@@ -9,7 +9,7 @@
 | Lượt | Run ID | Đạt / tổng | % | thuong | kho | tu_choi | So với chuẩn "đạt" |
 |---|---|---|---|---|---|---|---|
 | 1 | `run-1@20261127-233523` | 13/26 | 50% | 3/9 | 4/11 | 6/6 | **chưa** (cần ≥ 21/26) |
-| 2 | `run-5@20261128-105400` | *chờ chấm* | | | | | *chờ chấm* |
+| 2 | `run-5@20261128-105400` | 18/26 | 69% | 8/9 | 4/11 | 6/6 | **chưa** (cần ≥ 21/26) |
 
 Kết quả từng câu: `eval/run-1.csv`, `eval/run-5.csv`. Trace: `traces/run-1.jsonl`, `traces/run-5.jsonl`.
 
@@ -17,15 +17,17 @@ Kết quả từng câu: `eval/run-1.csv`, `eval/run-5.csv`. Trace: `traces/run-
 
 Lượt 1: `gpt-4o-mini`, temperature 0, 26/26 câu chạy, 0 lỗi kỹ thuật. Huân chấm cả 26 câu.
 
-| Metric | Lượt 1 | Ngưỡng (N = 26) | Đạt? |
-|---|---|---|---|
-| `tra_loi_dung` (câu answer) | 3/16 | ≥ 12/16 | chưa |
-| `trich_dan_co_that` | 26/26 | 26/26 | đạt |
-| `quyet_dinh_dung` | 19/26 | ≥ 21/26 | chưa |
-| `tu_choi_dung` | 6/6 | 6/6 | đạt |
-| `khong_bia_yeu_cau` | 0 câu vi phạm được ghi | 0 | đạt |
+Lượt 2: `gpt-4o-mini`, temperature 0, 26/26 câu chạy, 0 lỗi kỹ thuật, chấm cả 26 câu theo cùng cách như lượt 1.
 
-T03 và T10 chấm theo `expected` (đúng định nghĩa `tra_loi_dung`); nếu theo `pass_criterion` sẽ là 15/26.
+| Metric | Lượt 1 | Lượt 2 | Ngưỡng (N = 26) | Lượt 2 đạt? |
+|---|---|---|---|---|
+| `tra_loi_dung` (câu answer) | 3/16 | 9/16 | ≥ 12/16 | chưa |
+| `trich_dan_co_that` | 26/26 | 26/26 | 26/26 | đạt |
+| `quyet_dinh_dung` | 19/26 | 24/26 | ≥ 21/26 | đạt |
+| `tu_choi_dung` | 6/6 | 6/6 | 6/6 | đạt |
+| `khong_bia_yeu_cau` | 0 câu vi phạm được ghi | 0 câu vi phạm được ghi | 0 | đạt |
+
+Chấm theo `expected` (đúng định nghĩa `tra_loi_dung`). Nếu theo `pass_criterion`: lượt 1 sẽ là 15/26 (T03, T10), lượt 2 sẽ là 21/26 (T03, T08, T10). Số chính thức vẫn là 13/26 và 18/26.
 
 Lưu ý khi đọc số: lúc chỉnh prompt trước lượt 1 có chạy dò bằng một số câu trong bộ thử (`spec.md` §10). `ai.py` đặt temperature 0 trước lượt 1; dòng ghi ở §10 được thêm sau khi lượt 1 đã chạy.
 
@@ -72,10 +74,10 @@ Tổng 13 câu trượt = 7 + 6. Cả 13 đều là câu đáng lẽ `answer`: c
   - đưa 8 mục cho model (trước 5); biết lab thì ghép mục nộp bài và đưa `SUBMISSION.md` lên đầu;
   - prompt: tiền đề sai, tài liệu mâu thuẫn hoặc chỉ ghi một phần thì vẫn `answer` và nói rõ.
 - **Thay đổi thứ hai, ngoài nhóm lỗi trên:** không biết lab thì code hỏi lại lab; trong một phiên nhớ số lab (`eval` không dùng phần nhớ).
-- **Kết quả ở nhóm đã nhắm:** 6/7 câu giờ ra `answer` (T05, T06, T08, T09, T19, T26); **T12 vẫn `not_found`**. Trong 6 câu đó, bao nhiêu câu *đủ ý* thì chờ chấm.
+- **Kết quả ở nhóm đã nhắm:** 6/7 câu giờ ra `answer` (T05, T06, T08, T09, T19, T26); **T12 vẫn `not_found`**. Trong 6 câu đó, 4 câu đạt (T05, T06, T19, T26); T08 và T09 vẫn thiếu ý. Nhóm đã nhắm: **0/7 → 4/7** câu đạt.
 - **Đúng nhánh (`quyet_dinh_dung`):** 19/26 → **24/26**, ngưỡng ≥ 21/26.
-- **Tổng câu đạt:** 13/26 (50%) → *chờ chấm*.
-- **Câu tệ đi:** T23 từ đúng nhánh thành lệch: đáp án là `not_found`, bot nay trả lời `answer`, nói tài liệu Day07 chỉ ghi nộp link theo hướng dẫn giảng viên, không ghi LMS hay coach, và khuyên hỏi coach. Nội dung khớp tài liệu nhưng sai nhãn đã chốt; không sửa `expected`. Câu tệ đi khác (nếu có) ghi sau khi chấm.
+- **Tổng câu đạt:** 13/26 (50%) → **18/26 (69%)**, chưa đạt chuẩn ≥ 21/26. Thêm 6 câu đạt (T05, T06, T18, T19, T21, T26), mất 1 câu (T23).
+- **Câu tệ đi:** T23 từ đúng nhánh thành lệch: đáp án là `not_found`, bot nay trả lời `answer`, nói tài liệu Day07 chỉ ghi nộp link theo hướng dẫn giảng viên, không ghi LMS hay coach, và khuyên hỏi coach. Nội dung khớp tài liệu nhưng sai nhãn đã chốt; không sửa `expected`. Không có câu nào khác tệ đi.
 - **Chi phí đổi theo:** token vào trung bình mỗi câu 3.828 → 4.782 (+25%), token ra 118 → 99, số lần gọi model 1,4 → 1,1.
 - **Độ ổn định:** đúng nhánh ở các lần chạy cùng code: 21 (có 3 lỗi mạng), 23, 23, 24 trên 26.
 
@@ -83,8 +85,25 @@ Tổng 13 câu trượt = 7 + 6. Cả 13 đều là câu đáng lẽ `answer`: c
 
 ## 4. Còn lại
 
+**8 câu trượt ở lượt 2:**
+
+| Nhóm lỗi | Số câu | Câu |
+|---|---|---|
+| Đúng nhánh nhưng thiếu ý hoặc sai ý | 6 | T03, T08, T09, T10, T17, T22 |
+| Đáng lẽ `answer` nhưng ra `not_found` | 1 | T12 |
+| Đáng lẽ `not_found` nhưng ra `answer` | 1 | T23 |
+
+**Lỗi cụ thể** (lấy từ `eval/run-5.csv`, `traces/run-5.jsonl`):
+
+| Câu | Input | Output | Vì sao sai |
+|---|---|---|---|
+| T09 | Lab Day08: xong CP1 thì tự kiểm tra bằng lệnh gì… | `answer`, nêu `lab8.smoke` và `pytest -q`, trích `src/README.md` | Thiếu lệnh `pytest -q -m student -o addopts=` và kết quả 186 failed, 62 passed |
+| T12 | Lab Day08: 15:30 là hạn nộp bài đúng không? | `not_found` | Cả hai lần model viết được hạn đúng nhưng vẫn gắn nhãn `not_found`, nên học viên chỉ thấy câu "hỏi lab coach" |
+| T17 | Repo Day07 đặt giống Day04 là `…-HoVaTen-MSSV-…` đúng không? | `answer`, đưa đúng mẫu `MSSV-HoTen` | Giải thích sai lý do: nói tên người hỏi đưa ra thiếu MSSV và có dấu, thay vì sai thứ tự |
+| T22 | Thư mục `submission/` của Day10 phải có những file gì | `answer` | Thiếu `TEAM.md`, code cổng vòng 1/2, `runs/journal.jsonl`, `manifest.json`, lệnh `--collect` |
+
 - **Lỗi chưa sửa + nguy hiểm thế nào:**
-  - T12: hỏi "15:30 có phải hạn nộp không" vẫn bị đẩy sang `not_found`, học viên có thể hiểu nhầm mốc checkpoint với hạn nộp.
-  - T24 (lượt 1): model gán cho tài liệu một quy định không có; metric hiện tại không bắt được.
-  - Câu thiếu ý hoặc lạc có trích dẫn thật nên học viên dễ tin là đủ (6 câu ở lượt 1; số ở lượt 2 chờ chấm).
+  - T12: hỏi "15:30 có phải hạn nộp không" vẫn bị đẩy sang `not_found`, học viên không được xác nhận 15:30 chỉ là mốc checkpoint, phải đi hỏi coach.
+  - T24 (lượt 1): model gán cho tài liệu một quy định không có; metric hiện tại không bắt được. Output T24 ở lượt 2 không lặp lại câu đó, nhưng chưa có gì chặn lỗi này.
+  - Câu thiếu ý hoặc lạc có trích dẫn thật nên học viên dễ tin là đủ (6 câu ở lượt 1, 6 câu ở lượt 2).
 - **Nếu có thêm 1 tuần** *(đề xuất, nhóm chốt)*: giữ riêng khoảng 20% câu thử không nhìn khi sửa; thêm metric bắt quy định bị gán cho tài liệu; thêm nguồn quy định chung của khoá (vd nơi nộp bài) để trả lời được câu kiểu T23.
