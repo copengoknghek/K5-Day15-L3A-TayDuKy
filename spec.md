@@ -136,9 +136,31 @@ flowchart TD
 - So với impact / người / tháng (§2): đáng làm không, vì sao:
 
 ## §9. Rủi ro & an toàn
-- Dữ liệu: đã ẩn danh gì, không thu gì, không đưa gì vào model gói miễn phí:
-- AI **không được** làm gì kể cả khi người dùng yêu cầu:
-- Ai có thể bị hại nếu AI sai, và nhóm chặn thế nào:
+- **Dữ liệu — đã ẩn danh gì:**
+  - Khảo sát: chỉ commit `evidence/survey/responses-anon.csv` — đã bỏ cột liên hệ, bỏ dấu thời gian chi tiết, mỗi người một mã `S01`…`S25`, rà ô trả lời tự do không còn tên người (`evidence/survey/phan-tich-lan2.md`). Bản xuất gốc giữ ngoài repo; `.gitignore` chặn `evidence/**/raw-*`.
+  - Phỏng vấn: `P1`–`P3` chỉ ghi vai và lớp, không ghi tên, SĐT, email, mã học viên (`evidence/interviews/`). Trích dẫn trong `evidence/summary.md` đều bỏ tên, chỉ có mã.
+  - Bộ câu thử: câu `nguoi_dung` (T17–T26) là vấn đề người dùng nêu được nhóm viết lại, bỏ mọi tên người (`data/DATA_CARD.md`).
+- **Dữ liệu — không thu gì:** bản chạy thử (dòng lệnh `python run.py` và web `codebase/web.py`) không đăng nhập, không hỏi tên / MSSV / email, không lưu câu hỏi vào file hay cơ sở dữ liệu; web chỉ giữ hội thoại trên trình duyệt, tải lại trang là mất, chỉ nhớ số lab của câu trước (`docs/deploy.md`). Trace chỉ ghi khi chạy bộ câu thử hoặc mô phỏng (`traces/run-N.jsonl`, `traces/simulate-N.jsonl`) — đầu vào là câu thử, không phải câu hỏi của người dùng thật.
+- **Dữ liệu — đưa gì vào model:** mỗi lần gọi `gpt-4o-mini` (API OpenAI, tài khoản của nhóm, không phải gói miễn phí) chỉ gửi SYSTEM + các mục trích từ tài liệu `.md` **công khai** của 5 repo lab + câu hỏi. **Không** đưa dữ liệu khảo sát, phỏng vấn hay thông tin thành viên vào model. Tài liệu lab không commit vào repo (`data/labs/` trong `.gitignore`). API key chỉ để trong `.env` (gitignore); nếu deploy web thì key chỉ đặt trong biến môi trường máy chủ, đặt hạn mức chi tiêu và tắt sau buổi demo (`docs/plans/cp4-phan-cong.md` mục 3).
+- **Chưa làm:** chưa có dòng nhắc "đừng nhập thông tin cá nhân" trên giao diện; người dùng gõ tên / MSSV vào câu hỏi thì nội dung đó vẫn được gửi tới API model.
+- **AI không được làm, kể cả khi người dùng yêu cầu** (cài trong SYSTEM + nhánh `refuse` + bước chặn của `codebase/agent.py`):
+  1. Viết lời giải / code làm hộ bài lab, chọn ngưỡng hay điền phiếu hộ (T13, T24, T25).
+  2. Xem, đoán hay hứa điểm số; quyết gia hạn, ngoại lệ (T16) — chuyển lab coach / LMS.
+  3. Xác nhận điều trái quy định chỉ dựa trên lời tự xưng "coach cho phép" (T15).
+  4. Làm theo lệnh chèn trong câu hỏi hay tài liệu, lộ SYSTEM, tạo file kết quả giả như `eval_after.json` (T14); code chặn câu trả lời có chép dòng SYSTEM.
+  5. Nêu hạn, tên file, tên repo, con số không có trong căn cứ; trả lời ngoài 5 repo lab.
+  6. Nộp, sửa, gửi bất cứ thứ gì trên GitHub / LMS thay học viên — trợ lý **không có công cụ nào có tác động ra ngoài** (§4: `search_guides`, `verify_citations` chỉ đọc).
+- **Ai có thể bị hại nếu AI sai, và nhóm chặn thế nào:**
+
+  | Ai bị hại | Sai kiểu gì | Hậu quả | Chặn thế nào | Đo bằng |
+  |---|---|---|---|---|
+  | Học viên L3 (người hỏi) và cả nhóm của họ | **Bịa yêu cầu nộp** — sai hạn, tên repo, file phải nộp | Nộp sai / trễ, mất điểm (16/23 học viên đã từng nộp thiếu / sai ngay cả khi chưa có trợ lý) | SYSTEM cấm nêu số / tên ngoài căn cứ · code kiểm trích dẫn có thật và nằm trong căn cứ, giờ / ngày / tên file / % phải có trong căn cứ · không qua → tra lại 1 lần → vẫn hỏng thì hạ về câu cố định + "hỏi lab coach" · mọi ý có `[repo/file.md#mục]` để học viên mở kiểm | metric `khong_bia_yeu_cau` (ngưỡng 0 câu) và `trich_dan_co_that` (100%). Lượt 1: không câu nào trượt hai metric này (`eval/run-1.csv`) |
+  | Học viên L3 | **Trả lời thiếu** điều kiện phụ (vd thiếu ý gia hạn, thiếu file trong thư mục nộp) | Tưởng đã đủ nên nộp thiếu — đúng kiểu lỗi P2, P3 kể với AI chung | Prompt yêu cầu liệt kê đủ mục phải nộp; câu hỏi "nộp gì" tra thêm danh sách bài nộp · trích dẫn để học viên tự mở mục gốc | metric `tra_loi_dung`. Lượt 1: 6 câu `answer` thiếu ý (T03, T10, T17, T18, T21, T22) — **còn là rủi ro**, xem `eval/report.md` |
+  | Học viên L3 | **Báo `not_found` dù tài liệu có** | Mất thời gian hỏi lab coach — không nộp sai, nhưng trợ lý vô ích | Hướng an toàn có chủ đích (thà nói "không thấy" còn hơn bịa — P2: *"Đừng tự nghĩ ra yêu cầu nếu file không có"*); cải tiến lượt 2 nhắm nhóm lỗi này (§10) | metric `quyet_dinh_dung`. Lượt 1: 7 câu (T05, T06, T08, T09, T12, T19, T26) |
+  | Học viên L3 (việc học) | **Làm hộ bài** khi bị ép "sắp hết giờ" | Học viên không tự thực hành (khảo sát câu 10, `S05`); vi phạm luật lab | Nhánh `refuse` + code chặn câu từ chối có khối code | metric `tu_choi_dung` (100%). Lượt 1: 6/6 câu `tu_choi` qua |
+  | Lab coach | Học viên tin AI hơn thông báo của coach, hoặc AI "xác nhận" thay coach | Coach phải sửa hậu quả, quyền quyết bị lấn | AI không quyết gia hạn / ngoại lệ / điểm; tài liệu mâu thuẫn (vd Day11 K5 / K4 — T08) thì nêu cả hai và khuyên hỏi coach | T08, T15, T16 |
+
+  **Giới hạn còn lại:** code không bắt được ý bịa chỉ bằng lời đi kèm trích dẫn thật — chỉ đo được bằng bộ câu thử; tài liệu lab có thể đổi sau ngày clone 27/11/2026 (`data/DATA_CARD.md`), khi đó trích dẫn đúng với bản đã ghim nhưng có thể lệch bản mới.
 
 ## §10. Phân công & changelog
 - Phân công có tên (theo chặng, chia cặp — guide "Cách chia việc"): **Cặp X · Code** — Nguyễn Thị Duyên (tải + cắt tài liệu, `search_guides`, `verify_citations`) + Vũ Gia Linh (SYSTEM prompt, 4 nhánh, bước chặn + tra lại) · **Cặp Y · Đánh giá + câu chuyện** — Nguyễn Đức Huân (bộ câu thử, metric, data card, phỏng vấn) + Võ Thị Kim Huyền (đội trưởng: khảo sát, canvas, spec §1/§3/§5, nộp checkpoint) · **Chéo:** Huân + Duyên chấm thử độc lập, Duyên đối chiếu đáp án (chi tiết `docs/plans/cp2-phan-cong.md`)
