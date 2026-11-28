@@ -9,9 +9,11 @@
 | Lượt | Run ID | Đạt / tổng | % | thuong | kho | tu_choi | So với chuẩn "đạt" |
 |---|---|---|---|---|---|---|---|
 | 1 | `run-1@20261127-233523` | 13/26 | 50% | 3/9 | 4/11 | 6/6 | **chưa** (cần ≥ 21/26) |
-| 2 | | __/__ | | __/__ | __/__ | __/__ | đạt / chưa |
+| 2 | `run-5@20261128-105400` | *chờ chấm* | | | | | *chờ chấm* |
 
-Kết quả từng câu: `eval/run-1.csv`, `eval/run-2.csv`. Trace: `traces/run-1.jsonl`, `traces/run-2.jsonl`.
+Kết quả từng câu: `eval/run-1.csv`, `eval/run-5.csv`. Trace: `traces/run-1.jsonl`, `traces/run-5.jsonl`.
+
+"Lượt 2" trong báo cáo này là **file `run-5`**. Sau cải tiến nhóm chạy 4 lần cùng code, cùng 26 câu: `run-2` (3 câu lỗi mạng), `run-3` (1), `run-4` (1), `run-5` (0). `run-5` được chọn trước khi chấm vì là lượt không lỗi kỹ thuật; `run-2`–`run-4` giữ nguyên, không chấm.
 
 Lượt 1: `gpt-4o-mini`, temperature 0, 26/26 câu chạy, 0 lỗi kỹ thuật. Huân chấm cả 26 câu.
 
@@ -64,12 +66,25 @@ Tổng 13 câu trượt = 7 + 6. Cả 13 đều là câu đáng lẽ `answer`: c
 
 ## 3. Một lần cải tiến
 
-- Nhắm vào nhóm lỗi: __ — vì sao là nhóm **đau nhất với người dùng**: __
-- Đã sửa gì (có thể vài thay đổi cùng nhắm nhóm lỗi đó): __
-- Kết quả: nhóm lỗi đó __/__ → __/__ · tổng __% → __%
-- Câu nào **tệ đi** sau khi sửa: __
+- **Nhắm vào nhóm lỗi:** đáng lẽ `answer` nhưng ra `not_found` (7 câu ở lượt 1). Đây là nhóm **đau nhất với người dùng** vì tài liệu có câu trả lời mà học viên lại bị bảo đi hỏi coach, đúng việc công cụ muốn giảm.
+- **Đã sửa** (`agent.py`, commit `4c87a12`, ghi `spec.md` §10 trước khi chạy):
+  - model trích bằng mã ngắn `S1`, `S2`…, code đổi lại mã đầy đủ; bỏ link Markdown trong căn cứ;
+  - đưa 8 mục cho model (trước 5); biết lab thì ghép mục nộp bài và đưa `SUBMISSION.md` lên đầu;
+  - prompt: tiền đề sai, tài liệu mâu thuẫn hoặc chỉ ghi một phần thì vẫn `answer` và nói rõ.
+- **Thay đổi thứ hai, ngoài nhóm lỗi trên:** không biết lab thì code hỏi lại lab; trong một phiên nhớ số lab (`eval` không dùng phần nhớ).
+- **Kết quả ở nhóm đã nhắm:** 6/7 câu giờ ra `answer` (T05, T06, T08, T09, T19, T26); **T12 vẫn `not_found`**. Trong 6 câu đó, bao nhiêu câu *đủ ý* thì chờ chấm.
+- **Đúng nhánh (`quyet_dinh_dung`):** 19/26 → **24/26**, ngưỡng ≥ 21/26.
+- **Tổng câu đạt:** 13/26 (50%) → *chờ chấm*.
+- **Câu tệ đi:** T23 từ đúng nhánh thành lệch: đáp án là `not_found`, bot nay trả lời `answer`, nói tài liệu Day07 chỉ ghi nộp link theo hướng dẫn giảng viên, không ghi LMS hay coach, và khuyên hỏi coach. Nội dung khớp tài liệu nhưng sai nhãn đã chốt; không sửa `expected`. Câu tệ đi khác (nếu có) ghi sau khi chấm.
+- **Chi phí đổi theo:** token vào trung bình mỗi câu 3.828 → 4.782 (+25%), token ra 118 → 99, số lần gọi model 1,4 → 1,1.
+- **Độ ổn định:** đúng nhánh ở các lần chạy cùng code: 21 (có 3 lỗi mạng), 23, 23, 24 trên 26.
+
+**Giới hạn khi đọc số lượt 2:** cải tiến được chạy dò **trên chính bộ câu thử** (`spec.md` §10), không chép câu thử vào code. Số lượt 2 vì vậy không cho biết bot làm tốt thế nào với câu hỏi chưa từng thấy; nhóm chưa có phần câu giữ riêng.
 
 ## 4. Còn lại
 
-- Lỗi chưa sửa + nguy hiểm thế nào: lượt 1 chưa sửa gì sau khi chạy. 7 câu `not_found` sai khiến học viên phải đi hỏi coach dù tài liệu có câu trả lời; 6 câu thiếu ý hoặc lạc nguy hiểm hơn ở chỗ có trích dẫn thật nên học viên dễ tin là đủ; T24 cho thấy model có thể gán cho tài liệu một quy định không có.
-- Nếu có thêm 1 tuần: __
+- **Lỗi chưa sửa + nguy hiểm thế nào:**
+  - T12: hỏi "15:30 có phải hạn nộp không" vẫn bị đẩy sang `not_found`, học viên có thể hiểu nhầm mốc checkpoint với hạn nộp.
+  - T24 (lượt 1): model gán cho tài liệu một quy định không có; metric hiện tại không bắt được.
+  - Câu thiếu ý hoặc lạc có trích dẫn thật nên học viên dễ tin là đủ (6 câu ở lượt 1; số ở lượt 2 chờ chấm).
+- **Nếu có thêm 1 tuần** *(đề xuất, nhóm chốt)*: giữ riêng khoảng 20% câu thử không nhìn khi sửa; thêm metric bắt quy định bị gán cho tài liệu; thêm nguồn quy định chung của khoá (vd nơi nộp bài) để trả lời được câu kiểu T23.
