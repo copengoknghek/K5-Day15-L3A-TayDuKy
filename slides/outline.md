@@ -11,9 +11,9 @@
 | 3 | Giải pháp | Lát cắt một câu · sơ đồ · AI tự làm đến đâu, vì sao | `spec.md` §4 | ☑ *(soát lại nếu Linh đổi §4 trước 11:45)* |
 | 4 | Demo live | 1 trường hợp thường + 1 trường hợp khó (lấy từ bộ câu thử); mạng hỏng → video dự phòng | `eval/benchmark.csv` | ☑ *(chốt câu với Duyên sau khi khoá code)* |
 | 5 | **Đánh giá thế nào** | Dataset · bộ câu thử · metric · lượt 1 → lượt 2 so với chuẩn "đạt" (kèm run ID) · lỗi chính | `eval/README.md`, `eval/report.md` | ☑ |
-| 6 | **Chi phí khi dùng thật** | Chi phí / task thành công · 3 kịch bản · so với impact | `cost/cost-estimate.md` | ☐ chờ `simulate` (Linh) |
-| 7 | Kết luận | Go / iterate / stop — dẫn số ở trang 1, 5, 6 | — | ◐ khung xong, chờ số trang 5, 6 |
-| 8 | Nếu có thêm 1 tuần | 2–3 việc, trỏ về lỗi còn lại / phản hồi người dùng | `eval/report.md` mục 4 · `validation/log.md` | ☐ chờ Huân / Duyên |
+| 6 | **Chi phí khi dùng thật** | Chi phí / task thành công · 3 kịch bản · so với impact | `cost/cost-estimate.md` | ☑ |
+| 7 | Kết luận | Go / iterate / stop — dẫn số ở trang 1, 5, 6 | — | ☑ |
+| 8 | Nếu có thêm 1 tuần | 2–3 việc, trỏ về lỗi còn lại / phản hồi người dùng | `eval/report.md` mục 4 · `validation/log.md` | ☑ *(bổ sung nếu có `validation/log.md`)* |
 
 ---
 
@@ -76,11 +76,12 @@
   - Nhóm lỗi đã nhắm ("đáng lẽ `answer` → `not_found`"): **7 → 1** (còn T12); tốt lên 6 câu (T05, T06, T18, T19, T21, T26); tệ đi 1 câu (T23: `answer` thay vì `not_found`).
   - Lỗi chính còn lại: 6 câu `answer` thiếu ý / lạc (T03, T08, T09, T10, T17, T22), T12 còn `not_found`, T23 sai nhánh. *(Lưu ý: cải tiến có chạy dò trên bộ câu thử, chưa có tập giữ riêng.)*
 
-### Trang 6 — Chi phí khi dùng thật *(nói: Linh — chờ `simulate`)*
+### Trang 6 — Chi phí khi dùng thật *(nói: Linh)*
 
-- Chi phí / task thành công: __ (`gpt-4o-mini`) · __ (`gpt-5.4-mini`, giả định cùng tỉ lệ đạt)
-- 3 kịch bản / tháng: thấp __ · cơ sở __ · cao __
-- So impact: chi phí __ / người / tháng ↔ ~4,7 giờ / học viên / tháng đang mất (`spec.md` §2)
+- **Mô phỏng:** 50 phiên, seed 42, đo token trên `gpt-4o-mini`, dùng tỉ lệ đạt thật **18/26 (69%)** của lượt 2 (`run-5`).
+- **Chi phí / task thành công:** **$0,0057** (`gpt-4o-mini`) · **$0,0298** (`gpt-5.4-mini`, *giả định cùng tỉ lệ đạt — tự ước tính*).
+- **3 kịch bản / tháng (`gpt-4o-mini`):** thấp **$11,40** · cơ sở (700 người) **$26,61** · cao **$38,01**.
+- **So với impact:** **$0,038 / người / tháng** ↔ **~4,7 giờ / học viên / tháng** đang mất (`spec.md` §2; lưu ý đây là thời gian đang mất, chưa phải thời gian đã tiết kiệm được). Chi phí không phải rào cản.
 
 ### Trang 7 — Kết luận: Go / Iterate / Stop *(nói: Huyền)*
 
@@ -92,14 +93,14 @@
 | **Iterate** | Ngưỡng cứng giữ (an toàn) nhưng câu qua < 80% — trợ lý chưa bịa, nhưng còn hay nói "không thấy" hoặc trả lời thiếu |
 | **Stop** | Có câu bịa yêu cầu nộp / trích dẫn giả, hoặc chi phí vượt giá trị tiết kiệm được |
 
-- **Đã biết:** pain thật và lớn (trang 1: 60,9% mất ≥15', 69,6% nộp sai) · lượt 2: **18/26 (69%)** < 80%, nhưng giữ trọn 3 ngưỡng cứng (0 bịa · 6/6 từ chối · 26/26 trích dẫn có thật).
-- **Kết luận:** __ *(chờ số chi phí trang 6 của Linh để chốt cuối — theo luật trên đang là **Iterate** nếu chi phí hợp lý)*
+- **Đã biết:** pain thật và lớn (trang 1: 60,9% mất ≥15', 69,6% nộp sai) · lượt 2: **18/26 (69%)** < 80%, nhưng giữ trọn 3 ngưỡng cứng (0 bịa · 6/6 từ chối · 26/26 trích dẫn có thật) · chi phí rất rẻ (**$0,0057 / task thành công**, **$0,038 / người / tháng**).
+- **Kết luận: ITERATE.** Chi phí không phải rào cản ($26,61/tháng cho 700 học viên), hệ thống an toàn (0 bịa, 100% từ chối), nhưng chất lượng **69%** chưa đạt ngưỡng **80%** (≥21/26) → tiếp tục cải thiện độ đầy đủ ý trước khi triển khai rộng.
 
-### Trang 8 — Nếu có thêm 1 tuần *(nói: Duyên — chờ `eval/report.md` mục 4, `validation/log.md`)*
+### Trang 8 — Nếu có thêm 1 tuần *(nói: Duyên)*
 
-1. __
-2. __
-3. __
+1. **Giữ riêng ~20% bộ câu thử không nhìn khi sửa** (`eval/report.md` mục 3–4): khắc phục giới hạn chạy dò trên chính bộ câu thử để đo khách quan khả năng tổng quát hoá.
+2. **Giảm lỗi thiếu ý / sai ý (6 câu) và thêm metric bắt "gán quy định không có"** (`eval/report.md` mục 4): xử lý nhóm T03, T08, T09, T10, T17, T22, T12 và chặn lỗi gán quy định kiểu T24 lượt 1.
+3. **Bổ sung nguồn quy định chung của khoá** (`eval/report.md` mục 4): thêm tài liệu về nơi nộp bài / quy định chung lớp để trả lời chắc các câu kiểu T23.
 
 ---
 
