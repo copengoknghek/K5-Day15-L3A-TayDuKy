@@ -57,6 +57,7 @@ Trong README này lệnh viết là `python …`; máy nhóm cần `python3` hay
 | Lệnh | Làm gì |
 |---|---|
 | `python run.py` | Chạy bản chạy thử (gõ đầu vào, nhận kết quả, kèm số lần gọi model / token) |
+| `python codebase/web.py` | Chạy bản web trên máy → http://localhost:8000 (cùng `answer()` với `run.py`) |
 | `python run.py check` | Kiểm `eval/benchmark.csv` (6 cột, số câu, `kho` / `tu_choi`, mã `source`, ô trống, dòng mẫu) `eval/metric_spec.yaml` (≥3 metric điền đủ) và `TEAMS.md` (đúng format để BTC quét). Chỉ cảnh báo, không sửa file |
 | `python run.py eval --try` | **Thử nối model:** chạy 3 câu đầu (`--try 5` = 5 câu) → `eval/run-try.csv`. Thấy "Nối model được" là xong. Không tính là một lượt |
 | `python run.py eval` | Chạy cả bộ qua `codebase/agent.py` → `eval/run-1.csv` (lần sau `run-2.csv`…) + `traces/run-1.jsonl`. Mỗi dòng có run ID, model, số lần gọi model / công cụ, token. Model còn giả → chỉ ghi `run-mock.csv`; mọi câu lỗi → `run-error.csv`; Ctrl+C → `run-stopped.csv` — đều **không** được đánh số |
@@ -94,7 +95,8 @@ Nhóm dùng stack khác (Node, Streamlit, notebook…): sửa hàm `run_app()` t
 | `verify_citations` (kiểm trích dẫn) | **Thật** | So từng `[repo/file.md#heading]` với mục có thật |
 | Bước tra lại + chặn (A+) | **Thật** | Đã chạy với model thật trong các lượt chạy dò; chế độ giả không kích hoạt |
 | Bộ câu thử | **Thật** | 26 câu: 16 `tu_viet` · 10 `nguoi_dung` (nhóm viết lại thành câu hỏi từ vấn đề người dùng nêu trong khảo sát và phỏng vấn) |
-| Giao diện, nhớ hội thoại | **Chưa có** | Bản chạy thử là dòng lệnh, mỗi câu hỏi là một lượt riêng |
+| Giao diện | **Thật**, chạy trên máy | `python run.py` (dòng lệnh) · `python codebase/web.py` (web: trang chủ và trang bot, http://localhost:8000). Chưa deploy; xem [docs/deploy.md](docs/deploy.md) |
+| Nhớ hội thoại | **Chỉ nhớ số lab** | Trong một phiên, câu sau không nêu lab thì dùng lab của câu trước và ghi rõ; không nhớ nội dung. `eval`, `simulate` chạy mỗi câu độc lập |
 
 ## Dùng AI vào việc gì
 
