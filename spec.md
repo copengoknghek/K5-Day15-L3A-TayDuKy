@@ -130,10 +130,10 @@ flowchart TD
 - Kết quả: lượt 1 13/26 (50%), chưa đạt chuẩn · lượt 2 18/26 (69%), chưa đạt chuẩn — run ID: `run-1@20261127-233523` / `run-5@20261128-105400` → chi tiết `eval/report.md`, hồ sơ `eval/README.md`
 
 ## §8. Chi phí khi dùng thật *(guide 4.2)*
-- Persona + giá: `cost/personas.yaml` · lượt mô phỏng: `cost/simulate-__.csv` (__ phiên)
-- Chi phí / task thành công: __ (model __) · __ (model __)
-- Chi phí / tháng ở quy mô thật: thấp __ · cơ sở __ · cao __ → chi tiết `cost/cost-estimate.md`
-- So với impact / người / tháng (§2): đáng làm không, vì sao:
+- Persona + giá: `cost/personas.yaml` · lượt mô phỏng: `cost/simulate-1.csv` (50 phiên, seed 42, 0 lỗi; run ID `simulate-1@20261128-115208`)
+- Chi phí / task thành công (tỉ lệ đạt lượt 2: 18/26 = 69%, `run-5`): **$0,0057** (`gpt-4o-mini`) · $0,0298 (`gpt-5.4-mini`, đo token trên `gpt-4o-mini`, giả định cùng tỉ lệ đạt — *tự ước tính*)
+- Chi phí / tháng ở quy mô thật (`gpt-4o-mini`): thấp (300) $11,40 · cơ sở (700) **$26,61** · cao (1.000) $38,01 — `gpt-5.4-mini`: $59,57 · $138,99 · $198,56 → chi tiết `cost/cost-estimate.md`
+- So với impact / người / tháng (§2): chi phí cơ sở $0,038 / người / tháng, đặt cạnh ~4,7 giờ / học viên / tháng **đang mất** (chưa phải thời gian đã tiết kiệm được). Chi phí model không phải rào cản; rào cản là chất lượng 69% chưa đạt chuẩn 80% → **iterate**, chưa đưa vào dùng.
 
 ## §9. Rủi ro & an toàn
 - **Dữ liệu — đã ẩn danh gì:**
