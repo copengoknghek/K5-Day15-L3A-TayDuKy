@@ -190,27 +190,38 @@
 <section class="slide">
   <div class="page">6 / 8 · Linh</div>
   <div class="tag">Chi phí khi dùng thật</div>
-  <h1>Chi phí / task thành công</h1>
-  <div class="todo">CHỜ SỐ SIMULATE (Linh)<br>· Chi phí / task thành công: __ (gpt-4o-mini) · __ (gpt-5.4-mini, giả định cùng tỉ lệ đạt — tự ước tính)<br>· 3 kịch bản / tháng: thấp __ · cơ sở __ · cao __<br>· So impact: __ / người / tháng ↔ ~4,7 giờ / học viên / tháng đang mất</div>
-  <div class="src">Nguồn: cost/cost-estimate.md · cost/personas.yaml · cost/simulate-N.csv · giá: developers.openai.com/api/docs/pricing (xem 25/11/2026)</div>
+  <h1>$0,0057 / task thành công — $26,61 / tháng cho 700 học viên L3</h1>
+  <div class="big" style="grid-template-columns:repeat(3,1fr)">
+    <div class="stat"><b>$0,0057</b><span>/ task thành công (<code>gpt-4o-mini</code> · tỉ lệ đạt thật 18/26)</span></div>
+    <div class="stat"><b>$26,61</b><span>/ tháng kịch bản cơ sở (700 học viên L3)</span></div>
+    <div class="stat"><b>$0,038</b><span>/ người / tháng ↔ ~4,7 giờ / học viên đang mất</span></div>
+  </div>
+  <table>
+    <tr><th>Model</th><th>Chi phí / task thành công</th><th>Thấp / tháng</th><th>Cơ sở / tháng (700 người)</th><th>Cao / tháng</th></tr>
+    <tr class="pick"><td><code>gpt-4o-mini</code> (đo thật)</td><td>$0,0057</td><td>$11,40</td><td>$26,61</td><td>$38,01</td></tr>
+    <tr><td><code>gpt-5.4-mini</code> <small>(giả định cùng tỉ lệ đạt — tự ước tính)</small></td><td>$0,0298</td><td colspan="3">Tính từ cùng log token 50 phiên (seed 42), giá gấp ~5,2×</td></tr>
+  </table>
+  <p style="margin:14px 0 0;font-size:18px"><b>So với impact:</b> $0,038 / người / tháng rất nhỏ so với ~4,7 giờ / học viên / tháng đang mất (<i>chưa phải thời gian đã tiết kiệm được</i>). <b>Chi phí không phải rào cản.</b></p>
+  <div class="src">Nguồn: cost/cost-estimate.md · cost/personas.yaml · 50 phiên, seed 42, tỉ lệ đạt 18/26 (run-5) · giá: developers.openai.com/api/docs/pricing (xem 25/11/2026)</div>
 </section>
 
 <!-- ============ TRANG 7 ============ -->
 <section class="slide">
   <div class="page">7 / 8 · Huyền</div>
   <div class="tag">Kết luận</div>
-  <h1>Go / Iterate / Stop: <span style="color:#b45309">__</span></h1>
+  <h1>Go / Iterate / Stop: <span style="color:#b45309">ITERATE</span></h1>
   <table>
     <tr><th style="width:14%">Kết luận</th><th>Điều kiện (đặt trước khi có số lượt 2)</th></tr>
     <tr><td><b>Go</b></td><td>Lượt 2 ≥21/26 <b>và</b> 3 ngưỡng cứng giữ (0 bịa · 100% từ chối · 100% trích dẫn có thật) <b>và</b> chi phí / người / tháng ≪ ~4,7 giờ / người / tháng</td></tr>
-    <tr><td><b>Iterate</b></td><td>Ngưỡng cứng giữ (an toàn) nhưng &lt; 80% câu qua — chưa bịa, nhưng còn nói “không thấy” hoặc trả lời thiếu</td></tr>
+    <tr class="pick"><td><b>✅ Iterate</b></td><td>Ngưỡng cứng giữ (an toàn) nhưng &lt; 80% câu qua — chưa bịa, nhưng còn nói “không thấy” hoặc trả lời thiếu</td></tr>
     <tr><td><b>Stop</b></td><td>Có câu bịa yêu cầu nộp / trích dẫn giả, hoặc chi phí vượt giá trị tiết kiệm</td></tr>
   </table>
-  <div class="big" style="grid-template-columns:repeat(3,1fr);margin-top:22px">
+  <div class="big" style="grid-template-columns:repeat(3,1fr);margin-top:20px">
     <div class="stat"><b>69,6%</b><span>học viên từng nộp sai — pain thật (trang 1)</span></div>
-    <div class="stat"><b>18 / 26</b><span>lượt 2 (69%) &lt; 21/26 · 0 bịa · 6/6 từ chối (trang 5)</span></div>
-    <div class="stat"><b>__</b><span>chi phí / task thành công (trang 6)</span></div>
+    <div class="stat"><b>18 / 26</b><span>lượt 2 (69%) &lt; 80% · 0 bịa · 6/6 từ chối (trang 5)</span></div>
+    <div class="stat"><b>$0,0057</b><span>/ task thành công · $0,038 / người / tháng (trang 6)</span></div>
   </div>
+  <p style="margin:0;font-size:19px"><b>Kết luận:</b> Chi phí không phải rào cản, hệ thống an toàn (0 bịa), nhưng chất lượng <b>69%</b> chưa đạt chuẩn <b>80%</b> → <b>Iterate</b> để tăng độ đầy đủ ý.</p>
   <div class="src">Nguồn: evidence/summary.md · eval/report.md · cost/cost-estimate.md</div>
 </section>
 
@@ -218,9 +229,22 @@
 <section class="slide">
   <div class="page">8 / 8 · Duyên</div>
   <div class="tag">Nếu có thêm 1 tuần</div>
-  <h1>Ba việc tiếp theo</h1>
-  <div class="todo">CHỜ eval/report.md mục 4 (Duyên) + validation/log.md (Huân)<br>1. __<br>2. __<br>3. __</div>
-  <div class="src">Nguồn: eval/report.md mục 4 · validation/log.md</div>
+  <h1>Ba việc tiếp theo để đưa 69% vượt chuẩn 80%</h1>
+  <div class="row" style="align-items:stretch">
+    <div class="col stat">
+      <b style="font-size:28px">1. Tập câu giữ riêng (~20%)</b>
+      <span style="font-size:18px;margin-top:10px">Tách ~20% câu thử không nhìn khi sửa prompt / code — khắc phục giới hạn chạy dò trên chính bộ câu thử (<code>eval/report.md</code> mục 3–4).</span>
+    </div>
+    <div class="col stat">
+      <b style="font-size:28px">2. Sửa nhóm thiếu ý &amp; metric mới</b>
+      <span style="font-size:18px;margin-top:10px">Xử lý 6 câu <code>answer</code> thiếu / sai ý (T03, T08, T09, T10, T17, T22) + T12; thêm metric bắt lỗi gán quy định không có cho tài liệu (T24 lượt 1).</span>
+    </div>
+    <div class="col stat">
+      <b style="font-size:28px">3. Bổ sung quy định chung khoá</b>
+      <span style="font-size:18px;margin-top:10px">Thêm nguồn quy định chung của khoá (vd nơi nộp bài theo lớp) để trả lời chắc các câu kiểu T23 và thử nghiệm thêm với học viên L3.</span>
+    </div>
+  </div>
+  <div class="src">Nguồn: eval/report.md mục 3–4 · spec.md §10</div>
 </section>
 
 </body>
