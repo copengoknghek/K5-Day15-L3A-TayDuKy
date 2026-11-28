@@ -29,13 +29,14 @@ def _where(e):
 def main() -> int:
     try:
         import tracing
-        from agent import answer
+        from agent import answer, next_lab
     except Exception as e:  # lỗi cú pháp, thiếu thư viện… trong codebase/
         print("Không nạp được codebase/ — lỗi ở %s: %s: %s" % (_where(e), type(e).__name__, e))
         print("Sửa lỗi rồi chạy lại. Cách nối model: docs/connect-model.md")
         return 1
     print("Bản chạy thử — gõ đầu vào rồi Enter. Thoát: Ctrl+C (hoặc Enter 2 lần với dòng trống).")
     blank = 0
+    lab = None  # số lab nhớ trong phiên, để câu hỏi tiếp không cần nhắc lại lab
     while True:
         try:
             text = input("> ").strip()
@@ -50,7 +51,8 @@ def main() -> int:
         blank = 0
         tracing.begin("app")
         try:
-            result = answer(text)
+            result = answer(text, lab_context=lab)
+            lab = next_lab(text, lab)
         except NotImplementedError as e:
             tracing.end()
             print("Chưa nối model: %s" % e)

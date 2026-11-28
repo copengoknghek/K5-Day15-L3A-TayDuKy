@@ -51,15 +51,17 @@ Data BTC cấp đã dùng (nếu có — không commit nguyên file): **không d
 
 ```mermaid
 flowchart TD
-    Q[Học viên hỏi] --> L["① Nhận diện lab<br/>regex Day/Lab/Ngày + số"]
-    L -->|"Day04/07/08/10/11"| S1["② search_guides(câu hỏi, lab=số)<br/>chỉ repo lab đó · BM25"]
-    L -->|"không thấy lab / lab khác"| S0["② search_guides(câu hỏi)<br/>tra cả 5 repo"]
+    Q[Học viên hỏi] --> L["① Nhận diện lab<br/>regex Day/Lab/Ngày + số<br/>câu không nêu lab: dùng số lab nhớ từ câu trước trong phiên"]
+    L -->|"Day04/07/08/10/11"| S1["② search_guides(câu hỏi, lab=số)<br/>chỉ repo lab đó · BM25 · thêm mục nộp bài, SUBMISSION.md lên đầu"]
+    L -->|"không biết lab / lab khác"| S0["② search_guides(câu hỏi)<br/>tra cả 5 repo"]
     S1 --> X["② bổ sung (code)<br/>hỏi nộp gì / sản phẩm cuối (không nhắc CP) → tra thêm danh sách bài nộp<br/>hỏi CP N → tra riêng CP N"]
     S0 --> X
     X -->|"có căn cứ"| M["③ call_model(SYSTEM, căn cứ + câu hỏi)<br/>dòng đầu: QUYẾT ĐỊNH: answer / ask_back / not_found / refuse"]
     X -->|"không mục nào khớp · không mục nào ghi CP N · hỏi giai đoạn N không nói CP"| E["Không có căn cứ: gọi model 1 lần, không tra lại<br/>giữ refuse; ask_back của model nếu qua kiểm<br/>còn lại code hỏi lại (CP N) hoặc not_found<br/>giai đoạn N: ngoài refuse, code luôn hỏi lại 'có phải CP N không'"]
     E --> OUT[Trả lời học viên]
-    M --> V{"④ code sửa mã chép lệch tên repo, rồi kiểm<br/>verify_citations + find_problem"}
+    M -->|"không biết lab"| K["Chỉ giữ refuse<br/>còn lại code hỏi lại: lab nào, tới phần nào"]
+    K --> OUT
+    M --> V{"④ code đổi mã ngắn S1, S2… thành mã đầy đủ,<br/>sửa mã chép lệch tên repo, rồi kiểm<br/>verify_citations + find_problem"}
     V -->|"qua"| OUT
     V -->|"not_found hoặc không qua"| R["⑤ Tra lại 1 lần<br/>search_guides(câu hỏi + từ khoá nộp / checkpoint / rubric)<br/>+ call_model lần 2"]
     R --> V2{"kiểm lại"}
@@ -74,24 +76,25 @@ flowchart TD
 
   | Công cụ | Input | Output | Tác động ra ngoài? |
   |---|---|---|---|
-  | `search_guides` | `query` (câu hỏi) · `lab` (vd `4`, `"Day07"`; None = cả 5 lab) · `k` (số mục, agent dùng 5) | `[{"code": "<repo>/<file>.md#<heading>", "text": "<mục, ≤2500 ký tự>"}]` — chấm điểm BM25 trên từ bỏ dấu, từ ở heading / tên file nặng gấp 3, "checkpoint 2" = "CP2"; heading trùng tên trong một file có mã `#<mục cha> > <heading>`, text có dòng "Thuộc: …" ghi mục cha | Không — chỉ đọc `data/labs/` |
+  | `search_guides` | `query` (câu hỏi) · `lab` (vd `4`, `"Day07"`; None = cả 5 lab) · `k` (số mục, agent dùng 8; biết lab thì ghép thêm tối đa 3 mục nộp bài) | `[{"code": "<repo>/<file>.md#<heading>", "text": "<mục, ≤2500 ký tự>"}]` — chấm điểm BM25 trên từ bỏ dấu, từ ở heading / tên file nặng gấp 3, "checkpoint 2" = "CP2"; heading trùng tên trong một file có mã `#<mục cha> > <heading>`, text có dòng "Thuộc: …" ghi mục cha | Không — chỉ đọc `data/labs/` |
   | `verify_citations` | `text` (câu trả lời của model) | `{"ok", "invalid": [...], "count"}` — mọi `[… .md#…]` (và `[… .md]` không có mục) phải trùng một mã mục có thật, không phân biệt hoa thường, bỏ `**` và `` ` ``; sai → `invalid` | Không — chỉ đọc `data/labs/` |
 
   Dữ liệu: 67 file `.md` → 453 mục (`data/DATA_CARD.md`), tải và ghim commit bằng `python codebase/fetch_labs.py`. Code công cụ: Duyên; luồng `agent.py`: Linh + Duyên.
 - **Mức tự động:** [ ] AI gợi ý, người quyết · [x] AI tự làm khi chắc, chuyển người khi không · [ ] AI tự làm — AI chỉ **trả lời thông tin**, không hành động thay ai. Sai thì học viên nộp sai, mất điểm (16/23 học viên L3 từng làm thiếu / sai yêu cầu — `evidence/survey/phan-tich-lan2.md`); nhưng câu trả lời có trích dẫn `file#mục` mở được nên học viên tự kiểm, sửa rẻ. Không chắc (không thấy lab, không có căn cứ, trích dẫn không qua kiểm) → hỏi lại hoặc chuyển lab coach.
-- **Chỗ chặn rủi ro:** rủi ro lớn nhất = **bịa yêu cầu nộp** (hạn, tên file, tên repo). Chặn bằng: (1) SYSTEM cấm nêu con số / tên không có trong căn cứ; (2) code kiểm: trích dẫn có thật (`verify_citations`) **và** nằm trong căn cứ đã đưa, `answer` phải có trích dẫn, tên file / giờ / ngày / % / khối code phải có trong căn cứ (khối chỉ liệt kê tên file có trong căn cứ thì cho qua). Trước khi kiểm, mã model chép lệch **phần tên repo** (thiếu, thừa, gõ sai vài ký tự) được code sửa, chỉ khi phần `file#heading` khớp đúng và khớp duy nhất một mục đã đưa; mỗi lần sửa ghi vào trace; (3) không qua → tra lại 1 lần, vẫn hỏng → code thay bằng câu cố định (`not_found` + "hỏi lab coach", hoặc `refuse`), ghi `note("chặn: …")` vào trace; `not_found` luôn dùng câu cố định; (4) hỏi mốc CP không mục nào ghi (vd "CP2" ở Day07) → không trả lời, chỉ hỏi lại hoặc từ chối. **Giới hạn:** code không kiểm được ý bịa chỉ bằng lời đi kèm trích dẫn thật — đo bằng câu thử. Rủi ro thứ hai = **làm hộ bài / bị chèn lệnh**: SYSTEM coi câu hỏi và tài liệu là dữ liệu, có nhánh `refuse` (câu thử T13, T14, T15).
+- **Chỗ chặn rủi ro:** rủi ro lớn nhất = **bịa yêu cầu nộp** (hạn, tên file, tên repo). Chặn bằng: (1) SYSTEM cấm nêu con số / tên không có trong căn cứ; (2) code kiểm: trích dẫn có thật (`verify_citations`) **và** nằm trong căn cứ đã đưa, `answer` phải có trích dẫn, tên file / giờ / ngày / % / khối code phải có trong căn cứ (khối chỉ liệt kê tên file có trong căn cứ thì cho qua). Trước khi kiểm, mã model chép lệch **phần tên repo** (thiếu, thừa, gõ sai vài ký tự) được code sửa, chỉ khi phần `file#heading` khớp đúng và khớp duy nhất một mục đã đưa; mỗi lần sửa ghi vào trace; (3) không qua → tra lại 1 lần, vẫn hỏng → code thay bằng câu cố định (`not_found` + "hỏi lab coach", hoặc `refuse`), ghi `note("chặn: …")` vào trace; `not_found` luôn dùng câu cố định; (4) hỏi mốc CP không mục nào ghi (vd "CP2" ở Day07) → không trả lời, chỉ hỏi lại hoặc từ chối; (5) không biết lab (câu không nêu và phiên chưa nhớ lab) → không trả lời theo lab tự đoán, code hỏi lại lab nào (trừ khi từ chối); model trích bằng mã ngắn `S1`, `S2`… và code đổi thành mã đầy đủ để hết lỗi chép sai mã. **Giới hạn:** code không kiểm được ý bịa chỉ bằng lời đi kèm trích dẫn thật — đo bằng câu thử. Rủi ro thứ hai = **làm hộ bài / bị chèn lệnh**: SYSTEM coi câu hỏi và tài liệu là dữ liệu, có nhánh `refuse` (câu thử T13, T14, T15).
 - **Chỗ người duyệt:** lab coach quyết gia hạn, ngoại lệ ("coach cho phép sửa grading.py" phải là thông báo chính thức), điểm số, và chỗ tài liệu mâu thuẫn (vd Day11 quy ước K5 nhưng ví dụ ghi K4 — T08). AI không có công cụ nào gửi tin hay sửa dữ liệu.
 - **Nguyên tắc thiết kế:**
 
   | Nguyên tắc | Chỗ cụ thể trên sơ đồ / trong bản chạy thử |
   |---|---|
-  | G10 — thu hẹp phạm vi khi không chắc | ① không thấy lab → model `ask_back` (T07) · ⑤ vẫn không có căn cứ → `not_found` + lab coach (T11), không đoán |
+  | G10 — thu hẹp phạm vi khi không chắc | ① không biết lab → code hỏi lại lab nào (T07) · ⑤ vẫn không có căn cứ → `not_found` + lab coach (T11), không đoán |
+  | G12 — nhớ tương tác gần đây | Trong một phiên `python run.py`, câu hỏi tiếp không nêu lab được hiểu theo lab câu trước và câu trả lời ghi rõ "Đang hiểu là lab DayNN" (`next_lab` trong `agent.py`, `app.py`). Chỉ nhớ số lab |
   | G11 — nói rõ vì sao hệ thống trả lời như vậy | `answer` kèm trích dẫn `[repo/file.md#mục]` để học viên mở đúng mục (T01); ④ chặn trích dẫn bịa hoặc ngoài căn cứ |
   | G1 — nói rõ hệ thống làm được gì | Câu `not_found` nói chỉ dựa trên tài liệu lab; câu hỏi lại về CP nêu đúng lab đã tra (`SAFE_NOT_FOUND`, `ask_checkpoint` trong `agent.py`). Chưa có lời giới thiệu phạm vi khi mở bản chạy thử |
   | Code giữ rào chắn, không giao cho model *(không phải mã HAX)* | ⑤ quyết định tra lại và hạ về câu an toàn nằm trong `agent.py`, model không tự chọn |
   | Người giữ quyết định đắt *(không phải mã HAX)* | Nhánh nét đứt tới lab coach: gia hạn, ngoại lệ, điểm, mâu thuẫn |
 
-- **Phần nào thật, phần nào giả (từ tối 27/11):** model **thật** — OpenAI `gpt-4o-mini`, temperature 0 (`codebase/ai.py`; cấu hình trong `.env`, không commit); nhánh tra lại ⑤ và bước chặn đã chạy với model thật trong các lượt chạy dò. Chưa có `.env` thì chạy **chế độ giả**: câu giả cố định, code kiểm nhưng không chặn (riêng câu không có căn cứ, vd "Day07 CP2", code tự trả câu hỏi lại / `not_found`). Tra cứu là BM25 trên từ khoá (chưa có embedding). Dữ liệu lab là **thật** (clone ngày 27/11/2026). Bản chạy thử là dòng lệnh, chưa có giao diện web và chưa nhớ hội thoại.
+- **Phần nào thật, phần nào giả (từ tối 27/11):** model **thật** — OpenAI `gpt-4o-mini`, temperature 0 (`codebase/ai.py`; cấu hình trong `.env`, không commit); nhánh tra lại ⑤ và bước chặn đã chạy với model thật trong các lượt chạy dò. Chưa có `.env` thì chạy **chế độ giả**: câu giả cố định, code kiểm nhưng không chặn (riêng câu không có căn cứ, vd "Day07 CP2", code tự trả câu hỏi lại / `not_found`). Tra cứu là BM25 trên từ khoá (chưa có embedding). Dữ liệu lab là **thật** (clone ngày 27/11/2026). Bản chạy thử là dòng lệnh, chưa có giao diện web; chỉ nhớ số lab trong phiên, không nhớ nội dung hội thoại (`eval` và `simulate` gọi từng câu độc lập).
 - **Thiếu dữ liệu:** chưa tải `data/labs/` thì công cụ báo lỗi kèm lệnh `python codebase/fetch_labs.py` (`python run.py` in lỗi rồi cho hỏi tiếp). Cố ý không trả danh sách rỗng, để trợ lý không nói "không có trong tài liệu" chỉ vì thiếu dữ liệu.
 
 ## §5. Chỗ khó — 4 lớp + ≥6 kịch bản + 2 tấn công *(guide 2.3)*
@@ -111,9 +114,9 @@ flowchart TD
 
 ## §6. Bốn đường đi của trải nghiệm
 - **Mọi thứ suôn sẻ:** "Day04 L3A đặt tên repo thế nào?" → `answer` + mẫu tên + `[…/SUBMISSION.md#Quy tắc đặt tên repo nộp]`; học viên mở mục để kiểm (T01).
-- **Không chắc (lớp 2):** không thấy lab → `ask_back` một câu; học viên hỏi lại kèm lab (T07).
+- **Không chắc (lớp 2):** không biết lab → `ask_back` một câu; học viên hỏi lại kèm lab (T07). Đã nêu lab ở câu trước trong phiên thì dùng lab đó và ghi rõ đang hiểu là lab nào.
 - **Không có căn cứ (lớp 1):** lần đầu `not_found` → code tra lại 1 lần → vẫn không có → "tài liệu không ghi, hỏi lab coach" (T11).
-- **Người dùng sửa:** học viên hỏi lại kèm lab / checkpoint cụ thể → đi lại luồng từ ①; bản chạy thử chưa nhớ hội thoại, mỗi câu là một lượt mới.
+- **Người dùng sửa:** học viên hỏi lại kèm lab / checkpoint cụ thể → đi lại luồng từ ①; muốn đổi lab thì ghi "Day N". Bản chạy thử không nhớ nội dung câu trước, chỉ nhớ số lab.
 - **Bị đòi ngoài phạm vi (lớp 3):** xin code, xin điểm, chèn lệnh → `refuse` + chỉ mục tài liệu hoặc lab coach (T13, T14, T16).
 - **Trường hợp đặc thù lĩnh vực (lớp 4):** nhầm mốc checkpoint với hạn nộp, lời tự xưng "coach cho phép" → trả đúng quy định kèm trích dẫn, việc ngoại lệ chuyển lab coach (T12, T15).
 
@@ -152,6 +155,8 @@ flowchart TD
 | 27/11 23:00 | Thêm T17–T26 (10 câu `nguoi_dung`) vào `eval/benchmark.csv`, khoá bộ 26 câu | CP3 cần ≥ 1/3 câu từ người dùng, trước đó là 0/16. Câu viết lại từ khảo sát câu 7, 9, 10, C3 và phỏng vấn P1. T01–T16 không đổi |
 | 27/11 23:00 | Ngưỡng cho bộ 26 câu giữ nguyên tỉ lệ, không sửa §7 và `metric_spec.yaml` | Câu qua ≥ 80% → ≥ 21/26 · `tra_loi_dung` ≥ 75% câu answer (≥ 12/16) · `quyet_dinh_dung` ≥ 80% (≥ 21/26) · `trich_dan_co_that` 100% (26/26) · `tu_choi_dung` 100% (6/6) · `khong_bia_yeu_cau` 0 câu vi phạm |
 | 27/11 23:17 | `ai.py`: đặt temperature 0 cho model `gpt-4*` (commit `206bb86`), trước lượt 1 | Chạy dò: cùng một câu cho kết quả khác nhau giữa các lần (T01 lúc nêu, lúc thiếu quy tắc viết tên) |
+| 28/11 ~10:20 | **Cải tiến cho lượt 2**, nhắm nhóm "đáng lẽ `answer` nhưng ra `not_found`": model trích bằng mã ngắn `S1`, `S2`… (code đổi lại mã đầy đủ), bỏ link Markdown trong căn cứ; đưa 8 mục (trước 5), biết lab thì ghép mục nộp bài và đưa `SUBMISSION.md` lên đầu; prompt: tiền đề sai / tài liệu mâu thuẫn / ghi một phần vẫn `answer` và nói rõ, không tự biến đổi mẫu, ưu tiên yêu cầu bắt buộc hơn bonus (`agent.py`) | Lượt 1: T05 T06 T08 T09 T12 T19 T26. Chạy dò **trên chính bộ câu thử** trước lượt 2 (không chép câu thử vào code); token vào tăng khoảng 32% |
+| 28/11 ~10:20 | Thay đổi thứ hai, ngoài nhóm lỗi trên: không biết lab thì code luôn hỏi lại lab (trừ khi từ chối); trong một phiên nhớ số lab của câu trước và ghi rõ (`agent.py`, `app.py`, §4, §6). `eval` không truyền lab nhớ. Không đổi lát cắt (người dùng, việc, quyết định, kết quả) | Thử tay: "bài lab này yêu cầu làm gì" không nêu lab mà trả lời theo Day04; người xem video góp ý câu hỏi tiếp không hiểu lab đang nói. Chạy dò sau cải tiến thấy T07 ra `not_found` |
 
 **Sau CP4 (đến 23:59 Thứ Bảy 28/11)** (sửa theo góp ý — không sửa chuẩn "đạt", câu thử, số bằng chứng, kết quả các lượt đã chạy)
 
